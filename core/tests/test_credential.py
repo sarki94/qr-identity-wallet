@@ -8,7 +8,7 @@ from hypothesis import HealthCheck, given, settings, strategies as st
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from qrw_core.credential import (
-    CredentialPayload, Reason, SignedCredential, issue_credential, mask_nin, verify_credential,
+    Reason, SignedCredential, issue_credential, mask_nin, verify_credential,
 )
 from conftest import TODAY
 

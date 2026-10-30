@@ -44,4 +44,5 @@ def test_tc_core_034_challenges_are_unique_128_bit():
 @pytest.mark.req("NFR-S5")
 @pytest.mark.parametrize("bad", ["", "!!!", "AAAA", "x" * 200])
 def test_tc_core_035_garbage_response_returns_false(holder_key, bad):
-    assert verify_challenge_response(public_key_b64(holder_key.public_key()), new_challenge(), "cred-0001", bad) is False
+    hpk = public_key_b64(holder_key.public_key())
+    assert verify_challenge_response(hpk, new_challenge(), "cred-0001", bad) is False
