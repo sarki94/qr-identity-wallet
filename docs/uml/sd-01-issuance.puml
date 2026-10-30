@@ -1,0 +1,46 @@
+@startuml SD1
+!include style.iuml
+title Figure 4.2: Sequence Diagram, Enrolment and Credential Issuance (synchronous)
+autonumber
+actor "Enrolment\nOfficer" as O
+participant "Issuer\nPortal" as P
+participant "Auth\nService" as A
+participant "Issuer\nService" as I
+participant "Mock NIMC" as N
+participant "Trust &\nRevocation" as T
+participant "Citizen\nWallet" as W
+actor Farmer as F
+
+O -> P : log in (username, password)
+P -> A : POST /token
+A --> P : JWT {role: Officer}
+O -> P : enter farmer NIN
+P -> I : POST /enrolments {nin} + JWT
+I -> N : GET /nin/{nin}
+N --> I : demographic record
+I --> P : record for confirmation
+O -> P : confirm details, capture photo
+
+alt assurance level L2 (smartphone)
+  F -> W : create profile + set PIN
+  W -> W : generate device key pair
+  W --> O : show binding QR (holder public key)
+  O -> P : scan binding QR
+  P -> I : POST /credentials {level: L2, holder_pub}
+  I -> I : sign credential (Ed25519, issuer private key)
+  I --> P : signed credential
+  P --> W : credential QR (scanned into wallet)
+  W -> W : store credential under profile
+else assurance level L1 (paper wallet)
+  P -> I : POST /credentials {level: L1}
+  I -> I : sign credential (Ed25519, issuer private key)
+  I --> P : signed credential
+  P --> F : printed QR card
+end
+opt farmer already had an active credential
+  I -> I : in ONE database transaction:\nsave new credential + revoke old (reason: re-issue)
+  I -> T : publish revocation (list v+1)
+  T --> I : ack
+end
+note over I : Atomic re-issue: either both changes commit or neither does,\nso a farmer never has two active credentials and never has none.
+@enduml

@@ -1,0 +1,102 @@
+@startuml CD
+!include style.iuml
+title Figure 4.5: Class Diagram, Domain Model by Service
+hide methods
+
+package "Issuer Service" {
+  class Farmer {
+    nin_hash
+    name
+    ward
+    lga
+    state
+    photo_ref
+  }
+  class Credential {
+    credential_id
+    assurance_level : L1 | L2
+    issued_at
+    expires_at
+    status : Active | Revoked | Expired
+    signature
+  }
+  class HolderKey {
+    public_key
+  }
+  class IssuerKey {
+    key_id
+    public_key
+    valid_from
+    valid_to
+  }
+}
+
+package "Trust & Revocation Service" {
+  class RevocationList {
+    version
+    published_at
+    signature
+  }
+  class RevocationEntry {
+    credential_id
+    reason
+    revoked_at
+  }
+}
+
+package "Auth Service" {
+  class StaffUser {
+    user_id
+    role : Officer | Agent | Admin | Auditor
+    mfa_enabled
+  }
+  class DistributionPoint {
+    point_id
+    ward
+    lga
+  }
+}
+
+package "Audit & Sync Service" {
+  class VerificationRecord {
+    record_id
+    timestamp
+    result : Accepted | Rejected
+    level
+    reason
+    prev_hash
+    hash
+  }
+}
+
+package "Citizen Wallet (device)" {
+  class WalletProfile {
+    profile_id
+    pin_wrapped_private_key
+  }
+}
+
+Farmer *-- "0..*" Credential : owns >
+Credential *-- "0..1" HolderKey : binds (L2 only) >
+Credential "0..*" --> "1" IssuerKey : signed by >
+RevocationList *-- "0..*" RevocationEntry
+RevocationEntry "0..*" --> "1" Credential : revokes >
+VerificationRecord "0..*" --> "1" Credential : about >
+VerificationRecord "0..*" --> "1" StaffUser : recorded by (Agent) >
+VerificationRecord "0..*" --> "1" DistributionPoint : at >
+StaffUser "0..*" --> "0..1" DistributionPoint : assigned to >
+WalletProfile "1" -- "1" HolderKey : holds private half of >
+WalletProfile o-- "0..1" Credential : stores copy of >
+
+note bottom of Credential
+  Domain integrity rules:
+  1. A Credential cannot be created unless its Farmer exists
+     and the NIMC lookup succeeded (composition).
+  2. At most one Credential per Farmer has status = Active.
+  3. An L2 Credential must have exactly one HolderKey.
+end note
+note bottom of VerificationRecord
+  Append-only: each record stores the hash of the
+  previous one, so any edit breaks the chain.
+end note
+@enduml

@@ -1,0 +1,40 @@
+@startuml SD2
+!include style.iuml
+title Figure 4.3: Sequence Diagram, Offline Verification at a Distribution Point
+autonumber
+actor Farmer as F
+participant "Citizen Wallet\n(or paper wallet)" as W
+actor "Redemption\nAgent" as AG
+participant "Verifier\nApp" as V
+database "Local cache\n(keys, revocation list,\nrecord queue)" as C
+
+note over F, C : No network connection is used in this scenario.
+alt level = L2 (smartphone wallet)
+  F -> W : open profile, enter PIN
+  W --> AG : display credential QR
+else level = L1 (paper wallet)
+  F --> AG : hand over printed QR card
+end
+AG -> V : scan credential QR
+V -> C : load issuer public key (by key ID)
+V -> V : verify issuer signature, check expiry
+V -> C : check revocation list (version, age)
+alt signature invalid, expired, revoked, unparseable or list older than hard limit
+  V --> AG : REJECTED + reason
+else credential valid
+  opt level = L2
+    V --> W : display challenge QR (random nonce)
+    W -> W : sign (nonce + credential ID) with device key
+    W --> V : display response QR
+    V -> V : verify holder signature
+    break holder signature invalid or 60 s timeout
+      V --> AG : REJECTED (copy or replay)
+      V -> C : append verification record to queue
+    end
+  end
+  V --> AG : show signed photo
+  AG -> V : confirm face matches / does not match
+  V --> AG : ACCEPTED (L1 or L2) or REJECTED (face mismatch)
+end
+V -> C : append verification record to queue
+@enduml

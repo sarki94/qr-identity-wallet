@@ -1,0 +1,17 @@
+@startuml SM1
+!include style.iuml
+title Figure 4.6: State Machine, Verification Session (FR-16 to FR-22)
+hide empty description
+[*] --> Idle
+Idle --> CredentialRead : scan credential QR
+CredentialRead --> Rejected : [signature invalid OR expired\nOR revoked OR unparseable\nOR list older than hard limit]
+CredentialRead --> ChallengeShown : [valid AND level = L2]
+CredentialRead --> AwaitingFaceCheck : [valid AND level = L1]
+ChallengeShown --> AwaitingFaceCheck : [holder signature valid]
+ChallengeShown --> Rejected : [holder signature invalid\nOR timeout 60 s]
+AwaitingFaceCheck --> Accepted : [agent confirms match]
+AwaitingFaceCheck --> Rejected : [agent rejects match]
+Accepted --> RecordQueued : / append record
+Rejected --> RecordQueued : / append record
+RecordQueued --> Idle : next farmer
+@enduml

@@ -1,0 +1,30 @@
+@startuml SD3
+!include style.iuml
+title Figure 4.4: Sequence Diagram, Revocation and Asynchronous Synchronisation
+autonumber
+actor "Enrolment\nOfficer" as O
+participant "Issuer\nService" as I
+participant "Trust &\nRevocation" as T
+participant "Verifier\nApp" as V
+database "Local cache" as C
+participant "Audit &\nSync" as AU
+
+== Revocation (office, online) ==
+O -> I : revoke credential (reason)
+I -> T : publish revocation entry
+T -> T : sign revocation list v+1
+T --> I : ack
+
+== Later: distribution point regains signal ==
+V ->> T : GET /keys
+V ->> T : GET /revocations?since={cached version}
+T -->> V : signed key set + revocation delta
+V -> V : verify list signature
+V -> C : replace cached keys and list, record fetch time
+V -> C : read queued verification records
+V ->> AU : POST /records (batch) + agent JWT
+AU -> AU : append each record to hash chain\n(hash = SHA-256(record + previous hash))
+AU -->> V : ack (last accepted record ID)
+V -> C : clear acknowledged records
+note right of V : Open arrows = asynchronous messages.\nIf no signal, the verifier keeps working\nfrom the cache and retries later.
+@enduml
