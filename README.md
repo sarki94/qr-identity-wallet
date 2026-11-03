@@ -19,9 +19,48 @@ The PWA clients (Wallet, Verifier, Issuer Portal) are added in the next sprint.
 
 ## Run the services
 
-**Without Docker (any OS):**
+**Without Docker (any OS), from the repository root:**
 ```bash
+python services/scripts/run_local.py
+```
+**With Docker:** `docker compose up --build`
+
+Then open http://127.0.0.1:8002/docs for the Issuer API (each service has its own `/docs`).
+
+Demo accounts (prototype only; disable with `QRW_SEED_DEMO=0`):
+
+| Username | Password | Role |
+|---|---|---|
+| admin | Admin#2026! | Admin |
+| officer1 | Officer#2026! | Enrolment Officer |
+| agent1 / agent2 | Agent#2026! | Redemption Agent (points KURA-01 / KURA-02) |
+| auditor1 | Auditor#2026! | Auditor |
+
+Mock NIMC test NINs (fictional): 12345678901 (Musa Ibrahim), 23456789012 (Hauwa Garba), 34567890123, 45678901234, 56789012345, 67890123456.
+
+## Set up (once)
+
+From the repository root:
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\Activate.ps1    Linux/macOS: source .venv/bin/activate
 pip install -e ./core -e "./services[dev]"
+```
+
+## Run the core tests
+
+```bash
+cd core
+pytest --cov=qrw_core
+flake8 qrw_core tests
+bandit -r qrw_core
+```
+
+## Run the services
+
+**Without Docker (any OS), from the repository root:**
+```bash
 python services/scripts/run_local.py
 ```
 **With Docker:** `docker compose up --build`
