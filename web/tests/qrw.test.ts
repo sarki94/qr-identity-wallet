@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import vectors from "./vectors.json";
 import {
   b45decode, b64urlDecode, decodeQr, InvalidQRError, signChallenge, verifyChallengeResponse,
-  verifyCredential, verifyRevocationList, newHolderKey, challengeQr, parseTagged,
+  verifyCredential, verifyRevocationList, newHolderKey, challengeQr, parseTagged, cleanScanned, codeKind,
 } from "../src/lib/qrw";
 
 const keys = { [vectors.issuer.kid]: b64urlDecode(vectors.issuer.public_key) };
@@ -64,5 +64,26 @@ describe("TC-WEB: browser verifier agrees with the Python issuer", () => {
   it("TC-WEB-009 [FR-17] device-to-device QR formats round-trip", () => {
     expect(parseTagged(challengeQr("abc", "cred-1"), "QRW1C")).toEqual(["cred-1", "abc"]);
     expect(() => parseTagged("QRW1R:x:y", "QRW1C")).toThrow(InvalidQRError);
+  });
+});
+
+describe("TC-WEB: scanner input handling", () => {
+  it("TC-WEB-010 [NFR-S5] keeps a meaningful trailing space but drops line breaks", () => {
+    expect(cleanScanned("QRW1:AB \r\n")).toBe("QRW1:AB ");
+    expect(cleanScanned("\nQRW1:AB")).toBe("QRW1:AB");
+  });
+
+  it("TC-WEB-011 [NFR-U2] recognises each device-to-device code type", () => {
+    expect(codeKind(vectors.l2_qr)).toBe("credential");
+    expect(codeKind("QRW1B:abc")).toBe("binding");
+    expect(codeKind("QRW1C:cred:nonce")).toBe("challenge");
+    expect(codeKind("QRW1R:cred:sig")).toBe("response");
+    expect(codeKind("hello")).toBe("unknown");
+  });
+
+  it("TC-WEB-012 [FR-16] every vector still verifies after cleaning", () => {
+    for (const qr of [vectors.l2_qr, vectors.l1_qr]) {
+      expect(verifyCredential(decodeQr(cleanScanned(qr + "\r\n")), keys, new Set(), today).accepted).toBe(true);
+    }
   });
 });

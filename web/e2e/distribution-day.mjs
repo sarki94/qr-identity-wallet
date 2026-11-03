@@ -25,7 +25,8 @@ const agent = await agentCtx.newPage();
 const shot = (page, name) => page.screenshot({ path: `${SHOTS}${name}.png`, fullPage: true });
 const qrText = (page, prefix) => page.locator(`[data-qr^="${prefix}"]`).first().getAttribute("data-qr");
 async function paste(page, text) {
-  await page.locator("summary", { hasText: "No camera" }).last().click();
+  await page.locator("details", { has: page.locator("summary", { hasText: "No camera" }) }).last()
+    .evaluate((d) => { d.open = true; });
   await page.locator("#paste-code").last().fill(text);
   await page.getByRole("button", { name: "Use pasted code" }).last().click();
 }
@@ -85,6 +86,11 @@ async function presentAndAnswer() {
   await paste(farmer, challenge);
   return (await farmer.waitForSelector('[data-qr^="QRW1R:"]')).getAttribute("data-qr");
 }
+
+// 4b. Usage slip: the agent is shown the wallet's binding code by mistake. Helpful message, nothing recorded.
+await paste(agent, binding);
+check("wrong code type explained, not recorded", await agent.getByText(/binding code/).isVisible()
+  && await agent.locator(".status").getByText("0", { exact: true }).isVisible());
 
 // 5. Genuine farmer, fully offline: accepted.
 await shot(agent, "05-verifier-offline-scan");

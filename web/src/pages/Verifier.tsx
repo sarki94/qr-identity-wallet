@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Session } from "../lib/api";
 import {
-  b64urlDecode, challengeQr, decodeQr, InvalidQRError, KeySet, newChallenge, parseTagged, Payload,
+  b64urlDecode, challengeQr, codeKind, decodeQr, InvalidQRError, KeySet, newChallenge, parseTagged, Payload,
   todayIso, verifyChallengeResponse, verifyCredential, verifyRevocationList,
 } from "../lib/qrw";
 import { load, save } from "../lib/store";
@@ -36,6 +36,9 @@ const REASON_TEXT: Record<string, string> = {
   REVOKED: "Credential has been revoked.",
   MALFORMED: "Not a readable credential.",
   NOT_A_CODE: "Not a valid identity code: it is damaged, altered, or from another system.",
+  WRONG_CODE_BINDING: "That is the wallet's binding code (for the enrolment officer). Ask the farmer to tap Present and enter the PIN.",
+  WRONG_CODE_CHALLENGE: "That is a challenge code from a verifier, not a credential.",
+  WRONG_CODE_RESPONSE: "That is a wallet answer. Scan the credential first.",
   HOLDER_FAILED: "The wallet could not prove it holds this credential (copy or replay).",
   TIMEOUT: "The challenge timed out.",
   FACE_MISMATCH: "The agent judged the person does not match.",
@@ -111,6 +114,11 @@ export default function Verifier() {
     setMsg(null);
     if (!cache.list) return finish(false, null, "NO_SYNC", null, "unreadable");
     if (listAgeDays > HARD_DAYS) return finish(false, null, "LIST_TOO_OLD", null, "unreadable");
+    const kind = codeKind(text);
+    if (kind !== "credential" && kind !== "unknown") {
+      setMsg({ kind: "warn", text: REASON_TEXT[`WRONG_CODE_${kind.toUpperCase()}`] });
+      return; // a wrong-type code is a usage slip, not a verification attempt: nothing is recorded
+    }
     let signed;
     try { signed = decodeQr(text); } catch (e) {
       return finish(false, null, e instanceof InvalidQRError ? "NOT_A_CODE" : "MALFORMED", null, "unreadable");

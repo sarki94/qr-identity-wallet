@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
+import { cleanScanned } from "../lib/qrw";
 
 /** Camera QR scanner with a paste fallback (laptops without a camera, demos, automated tests). */
 export function Scanner({ onResult, prompt }: { onResult: (text: string) => void; prompt: string }) {
@@ -10,7 +11,7 @@ export function Scanner({ onResult, prompt }: { onResult: (text: string) => void
 
   useEffect(() => {
     if (!camera || !video.current) return;
-    const scanner = new QrScanner(video.current, (r) => { scanner.stop(); setCamera(false); onResult(r.data); },
+    const scanner = new QrScanner(video.current, (r) => { scanner.stop(); setCamera(false); onResult(cleanScanned(r.data)); },
       { preferredCamera: "environment", highlightScanRegion: true, returnDetailedScanResult: true });
     scanner.start().catch(() => { setError("Camera not available. Use HTTPS on phones, or paste the code below."); setCamera(false); });
     return () => { scanner.stop(); scanner.destroy(); };
@@ -25,7 +26,7 @@ export function Scanner({ onResult, prompt }: { onResult: (text: string) => void
       <details>
         <summary>No camera? Paste the code</summary>
         <textarea id="paste-code" value={pasted} onChange={(e) => setPasted(e.target.value)} rows={3} placeholder="QRW1:…" />
-        <button className="btn ghost" onClick={() => pasted.trim() && onResult(pasted.trim())}>Use pasted code</button>
+        <button className="btn ghost" onClick={() => { const t = cleanScanned(pasted); if (t.trim()) onResult(t); }}>Use pasted code</button>
       </details>
     </div>
   );

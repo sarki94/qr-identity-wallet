@@ -194,3 +194,22 @@ export function todayIso(d = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+
+/**
+ * Clean text from a scanner or paste box. Base45 uses the space character, so a
+ * credential may legitimately end with a space: strip only line breaks and tabs.
+ */
+export function cleanScanned(text: string): string {
+  return text.replace(/^[\r\n\t]+|[\r\n\t]+$/g, "");
+}
+
+export type CodeKind = "credential" | "binding" | "challenge" | "response" | "unknown";
+
+/** Name the kind of QRW code, so a wrong paste gets a helpful message. */
+export function codeKind(text: string): CodeKind {
+  if (text.startsWith(PREFIX)) return "credential";
+  if (text.startsWith("QRW1B:")) return "binding";
+  if (text.startsWith("QRW1C:")) return "challenge";
+  if (text.startsWith("QRW1R:")) return "response";
+  return "unknown";
+}
