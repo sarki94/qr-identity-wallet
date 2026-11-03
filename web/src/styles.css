@@ -78,3 +78,21 @@ details { display: grid; gap: 8px; }
   .printable { border: 2px solid #000; }
 }
 .row .choice input { flex: none; width: auto; }
+/* Guided demo */
+.demohead { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.narr { gap: 8px; }
+.narr .eyebrow { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.narr p { margin: 0; max-width: 75ch; }
+.steprail { display: flex; gap: 4px; }
+.steprail i { flex: 1; height: 6px; border-radius: 3px; background: var(--sunk); }
+.steprail i.on { background: var(--accent); } .steprail i.cur { background: var(--warn); }
+.devices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+@media (max-width: 900px) { .devices { grid-template-columns: minmax(0, 1fr); } }
+.device { align-content: start; }
+.device.live { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ok-soft); }
+.dhead { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; }
+.dhead .sub { grid-column: 1; } .dhead .pill { grid-row: 1 / span 2; grid-column: 2; }
+.note { margin: 0; background: var(--sunk); border-radius: 8px; padding: 8px 10px; font-size: .92rem; }
+.verdict.mini { border-radius: 10px; padding: 12px; display: grid; gap: 6px; border: 1px solid; }
+.verdict.mini .big { font-size: 1.25rem; }
+#demo-next { min-width: 200px; }

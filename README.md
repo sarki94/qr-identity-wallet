@@ -38,6 +38,10 @@ cd ../services
 pytest --cov=qrw_services    # 22 tests, including the end-to-end system test
 ```
 
+## Quick start: the Guided Demo (Windows)
+
+After the one-time setup below, **double-click `start-demo.bat`**. It opens two windows (services and web app; keep both open) and then the **Guided Demo** at http://localhost:4173/demo: all three devices (officer, farmer, agent) on one screen, driven by a **Next step** button. Each step runs a real action against the live services with the same verification code as the phone screens, and shows which requirements it proves. Close the two windows to stop.
+
 ## Run the services
 
 **Without Docker (any OS), from the repository root:**
