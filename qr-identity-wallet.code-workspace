@@ -1,0 +1,14 @@
+{
+  "folders": [
+    { "name": "repo (root)", "path": "." },
+    { "name": "core", "path": "core" },
+    { "name": "services", "path": "services" }
+  ],
+  "settings": {
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": ["tests"],
+    "flake8.args": ["--max-line-length=120"],
+    "files.exclude": { "**/__pycache__": true, "**/.pytest_cache": true, "**/.hypothesis": true }
+  }
+}

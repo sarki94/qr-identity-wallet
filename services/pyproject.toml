@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qrw-services"
+version = "0.1.0"
+description = "Backend services for the Offline-First QR Identity Wallet: Auth, Issuer, Trust & Revocation, Audit & Sync, Mock NIMC"
+requires-python = ">=3.11"
+dependencies = [
+  "qrw-core",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "sqlalchemy>=2.0",
+  "pyjwt[crypto]>=2.8",
+  "httpx>=0.27",
+  "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "hypothesis>=6", "flake8>=7", "bandit>=1.7"]
+
+[tool.setuptools.packages.find]
+include = ["qrw_services*"]
+
+[tool.setuptools.package-data]
+"qrw_services.nimc" = ["records.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["req(*ids): requirement IDs (FR/NFR) this test verifies, used to build the RTM"]

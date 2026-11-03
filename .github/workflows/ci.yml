@@ -32,3 +32,36 @@ jobs:
           path: |
             core/coverage.xml
             core/test-results.xml
+
+  services:
+    name: Service, integration and system tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e core -e "services[dev]"
+      - name: Lint (Flake8)
+        working-directory: services
+        run: flake8 qrw_services tests
+      - name: SAST (Bandit)
+        working-directory: services
+        run: bandit -r qrw_services -f txt
+      - name: API, integration and end-to-end tests with coverage
+        working-directory: services
+        run: pytest --cov=qrw_services --cov-report=term-missing --cov-fail-under=90 --junitxml=test-results.xml
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: services-test-evidence
+          path: services/test-results.xml
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t qrw-services .

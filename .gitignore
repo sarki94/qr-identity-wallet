@@ -12,3 +12,8 @@ node_modules/
 dist/
 *.pem
 .env
+
+.secrets/
+data/
+services/.secrets/
+services/data/

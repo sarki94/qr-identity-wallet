@@ -1,0 +1,33 @@
+Run started:2026-11-03 08:34:57.219224+00:00
+
+Test results:
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'bearer'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: qrw_services/auth/app.py:114:20
+113	            return {"access_token": jwt.encode(claims, private_key, algorithm="EdDSA"),
+114	                    "token_type": "bearer", "role": user.role, "point_id": user.point_id,
+115	                    "expires_in": hours * 3600}
+116	
+117	    @app.get("/me", tags=["auth"])
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 668
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1
+		Medium: 0
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 0
+Files skipped (0):

@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.flake8",
+    "ms-azuretools.vscode-docker",
+    "jebbs.plantuml",
+    "github.vscode-github-actions",
+    "humao.rest-client"
+  ]
+}

@@ -1,0 +1,67 @@
+# Start everything:  docker compose up --build
+# API docs: http://localhost:8001/docs (auth) ... 8005 (mock NIMC)
+x-service: &service
+  build: .
+  restart: unless-stopped
+  environment: &env
+    QRW_KEY_PASSWORD: ${QRW_KEY_PASSWORD:-dev-only-change-me}
+    QRW_AUTH_URL: http://auth:8000
+    QRW_ISSUER_URL: http://issuer:8000
+    QRW_TRUST_URL: http://trust:8000
+    QRW_AUDIT_URL: http://audit:8000
+    QRW_NIMC_URL: http://nimc:8000
+    QRW_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+  volumes:
+    - secrets:/secrets
+  depends_on:
+    init-secrets:
+      condition: service_completed_successfully
+
+services:
+  init-secrets:
+    build: .
+    user: root
+    command: sh -c "python -m qrw_services.secrets && chown -R qrw /secrets"
+    environment:
+      QRW_KEY_PASSWORD: ${QRW_KEY_PASSWORD:-dev-only-change-me}
+      QRW_SECRETS_DIR: /secrets
+    volumes:
+      - secrets:/secrets
+  nimc:
+    <<: *service
+    command: uvicorn qrw_services.nimc.app:app --host 0.0.0.0 --port 8000
+    ports: ["8005:8000"]
+  trust:
+    <<: *service
+    command: uvicorn qrw_services.trust.app:get_app --factory --host 0.0.0.0 --port 8000
+    ports: ["8003:8000"]
+    volumes: [secrets:/secrets, trust-data:/data]
+  auth:
+    <<: *service
+    command: uvicorn qrw_services.auth.app:get_app --factory --host 0.0.0.0 --port 8000
+    ports: ["8001:8000"]
+    volumes: [secrets:/secrets, auth-data:/data]
+  audit:
+    <<: *service
+    command: uvicorn qrw_services.audit.app:get_app --factory --host 0.0.0.0 --port 8000
+    ports: ["8004:8000"]
+    volumes: [secrets:/secrets, audit-data:/data]
+  issuer:
+    <<: *service
+    command: uvicorn qrw_services.issuer.app:get_app --factory --host 0.0.0.0 --port 8000
+    ports: ["8002:8000"]
+    volumes: [secrets:/secrets, issuer-data:/data]
+    depends_on:
+      init-secrets:
+        condition: service_completed_successfully
+      trust:
+        condition: service_started
+      nimc:
+        condition: service_started
+
+volumes:
+  secrets:
+  auth-data:
+  issuer-data:
+  trust-data:
+  audit-data:

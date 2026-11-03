@@ -1,0 +1,32 @@
+### Open in VS Code with the REST Client extension and click "Send Request" above each block.
+### Start the services first:  python services/scripts/run_local.py
+
+# @name login
+POST http://127.0.0.1:8001/token
+Content-Type: application/x-www-form-urlencoded
+
+username=officer1&password=Officer%232026!
+
+###
+@token = {{login.response.body.access_token}}
+
+# @name enrol
+POST http://127.0.0.1:8002/enrolments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"nin": "12345678901"}
+
+###
+# Issue a paper-wallet (L1) credential for the farmer just enrolled
+POST http://127.0.0.1:8002/credentials
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"farmer_id": {{enrol.response.body.id}}, "level": "L1"}
+
+###
+GET http://127.0.0.1:8003/keys
+
+###
+GET http://127.0.0.1:8003/revocations

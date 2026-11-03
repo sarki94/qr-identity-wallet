@@ -1,0 +1,8 @@
+[
+  {"nin": "12345678901", "first_name": "Musa", "last_name": "Ibrahim", "gender": "M", "ward": "Kura Ward", "lga": "Kura", "state": "Kano"},
+  {"nin": "23456789012", "first_name": "Hauwa", "last_name": "Garba", "gender": "F", "ward": "Dalili Ward", "lga": "Kura", "state": "Kano"},
+  {"nin": "34567890123", "first_name": "Bello", "last_name": "Sani", "gender": "M", "ward": "Kosawa Ward", "lga": "Kura", "state": "Kano"},
+  {"nin": "45678901234", "first_name": "Aisha", "last_name": "Usman", "gender": "F", "ward": "Karfi Ward", "lga": "Kura", "state": "Kano"},
+  {"nin": "56789012345", "first_name": "Garba", "last_name": "Abdullahi", "gender": "M", "ward": "Kura Ward", "lga": "Kura", "state": "Kano"},
+  {"nin": "67890123456", "first_name": "Zainab", "last_name": "Lawal", "gender": "F", "ward": "Gundutse Ward", "lga": "Kura", "state": "Kano"}
+]
