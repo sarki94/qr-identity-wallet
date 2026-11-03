@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, Route } from "../lib/router";
 
-const SCREENS = [
+const SCREENS: { to: Route; title: string; who: string; note: string }[] = [
   { to: "/demo", title: "Guided demo", who: "One laptop or projector: all three devices on one screen", note: "Best for testing and the oral defence" },
   { to: "/verifier", title: "Verifier", who: "Redemption agent at the distribution point", note: "Works offline after one sync" },
   { to: "/wallet", title: "Wallet", who: "Farmer's phone (one phone, many profiles)", note: "Works offline always" },

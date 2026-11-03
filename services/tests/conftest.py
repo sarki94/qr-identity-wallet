@@ -29,7 +29,7 @@ def system(settings):
             TestClient(auth_app(settings), base_url="http://auth") as auth, \
             TestClient(audit_app(settings), base_url="http://audit") as audit:
         issuer_application = issuer_app(settings, clients={"nimc": nimc, "trust": trust})
-        with TestClient(issuer_application, base_url="http://issuer") as issuer:
+        with TestClient(issuer_application, base_url="http://issuer", raise_server_exceptions=False) as issuer:
             yield {"nimc": nimc, "trust": trust, "auth": auth, "audit": audit, "issuer": issuer,
                    "issuer_app": issuer_application, "settings": settings}
 

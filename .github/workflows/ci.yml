@@ -49,6 +49,8 @@ jobs:
       - name: SAST (Bandit)
         working-directory: services
         run: bandit -r qrw_services -f txt
+      - name: Dependency audit (pip-audit)
+        run: pip install pip-audit && pip-audit --skip-editable
       - name: API, integration and end-to-end tests with coverage
         working-directory: services
         run: pytest --cov=qrw_services --cov-report=term-missing --cov-fail-under=90 --junitxml=test-results.xml
@@ -80,6 +82,8 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      - name: Dependency audit of shipped packages (npm audit)
+        run: npm audit --omit=dev --audit-level=moderate
       - name: Type-check (TypeScript strict)
         run: npx tsc --noEmit
       - name: Cross-language tests (Python-issued vectors verified in the browser library)

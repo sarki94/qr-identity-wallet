@@ -6,7 +6,7 @@ from the request body, so an agent cannot file records in someone else's name.
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
-from fastapi import Depends
+from fastapi import Body, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import DateTime, Integer, String, select
 from sqlalchemy.orm import Mapped, mapped_column
@@ -18,6 +18,9 @@ from ..shared.app import base_app
 from ..shared.config import Settings
 from ..shared.db import Base, make_session_factory
 from ..shared.security import Principal, require_roles
+
+
+MAX_BATCH = 2000  # NFR-C4: a full offline day of records in one upload, and no more
 
 
 class Record(Base):
@@ -58,7 +61,8 @@ def create_app(settings: Settings = None):
     auditor = require_roles("Auditor", "Admin")
 
     @app.post("/records", tags=["sync"])
-    def upload(batch: List[RecordIn], p: Principal = Depends(require_roles("Agent"))):
+    def upload(batch: List[RecordIn] = Body(..., max_length=MAX_BATCH),
+               p: Principal = Depends(require_roles("Agent"))):
         accepted = duplicates = 0
         with sessions() as db:
             last = db.scalar(select(Record).order_by(Record.seq.desc()).limit(1))

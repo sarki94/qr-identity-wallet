@@ -1,26 +1,23 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { Link, usePath } from "./lib/router";
 import Home from "./pages/Home";
+import Demo from "./pages/Demo";
 import Verifier from "./pages/Verifier";
 import Wallet from "./pages/Wallet";
 import Portal from "./pages/Portal";
 import Audit from "./pages/Audit";
-import Demo from "./pages/Demo";
+
+const SCREENS = { "/": Home, "/demo": Demo, "/verifier": Verifier, "/wallet": Wallet, "/portal": Portal, "/audit": Audit };
 
 export default function App() {
+  const path = usePath();
+  const Screen = SCREENS[path];
   return (
     <>
       <nav className="nav noprint">
-        <NavLink to="/" end>Home</NavLink><NavLink to="/demo">Guided demo</NavLink><NavLink to="/verifier">Verifier</NavLink><NavLink to="/wallet">Wallet</NavLink>
-        <NavLink to="/portal">Portal</NavLink><NavLink to="/audit">Audit</NavLink>
+        <Link to="/">Home</Link><Link to="/demo">Guided demo</Link><Link to="/verifier">Verifier</Link>
+        <Link to="/wallet">Wallet</Link><Link to="/portal">Portal</Link><Link to="/audit">Audit</Link>
       </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/verifier" element={<Verifier />} />
-        <Route path="/wallet" element={<Wallet />} />
-        <Route path="/portal" element={<Portal />} />
-        <Route path="/audit" element={<Audit />} />
-        <Route path="/demo" element={<Demo />} />
-      </Routes>
+      <Screen key={path} />
     </>
   );
 }
