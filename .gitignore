@@ -17,3 +17,5 @@ dist/
 data/
 services/.secrets/
 services/data/
+web/dist/
+web/e2e/screenshots/
