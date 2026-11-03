@@ -11,8 +11,9 @@ participant "Audit &\nSync" as AU
 
 == Revocation (office, online) ==
 O -> I : revoke credential (reason)
-I -> T : publish revocation entry
-T -> T : sign revocation list v+1
+I -> I : sign full revocation list v+1\n(issuer key never leaves Issuer)
+I -> T : PUT signed list + service key
+T -> T : verify signature, refuse rollback
 T --> I : ack
 
 == Later: distribution point regains signal ==
