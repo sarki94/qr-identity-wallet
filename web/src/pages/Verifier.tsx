@@ -6,8 +6,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Session } from "../lib/api";
 import {
-  b64urlDecode, challengeQr, codeKind, decodeQr, InvalidQRError, KeySet, newChallenge, parseTagged, Payload,
-  todayIso, verifyChallengeResponse, verifyCredential, verifyRevocationList,
+  b64urlDecode, challengeQr, codeKind, decodeQr, InvalidQRError, KeySet, newChallenge, packIds, parseTagged, Payload,
+  todayIso, unpackIds, verifyChallengeResponse, verifyCredential, verifyRevocationList,
 } from "../lib/qrw";
 import { load, save } from "../lib/store";
 import { Login } from "../components/Login";
@@ -20,6 +20,20 @@ const CHALLENGE_SECONDS = 60;
 const DAY = 86_400_000;
 
 interface Cache { keys: Record<string, string>; list: { version: number; ids: string[]; fetchedAt: number } | null }
+interface StoredCache { keys: Record<string, string>; list: { version: number; packed: string; fetchedAt: number } | null }
+
+// NFR-C3: the revocation list is kept compressed in the phone's storage.
+function loadCache(): Cache {
+  const s = load<StoredCache>("qrw.verifier.cache", { keys: {}, list: null });
+  try {
+    return { keys: s.keys || {}, list: s.list ? { version: s.list.version, fetchedAt: s.list.fetchedAt, ids: unpackIds(s.list.packed) } : null };
+  } catch {
+    return { keys: {}, list: null }; // unreadable cache: fail securely, force a fresh sync
+  }
+}
+function saveCache(c: Cache): void {
+  save("qrw.verifier.cache", { keys: c.keys, list: c.list ? { version: c.list.version, fetchedAt: c.list.fetchedAt, packed: packIds(c.list.ids) } : null });
+}
 interface QueuedRecord { record_id: string; credential_id: string; result: "accepted" | "rejected"; level: string | null; reason: string | null; verified_at: string }
 
 type Step =
@@ -48,7 +62,7 @@ const REASON_TEXT: Record<string, string> = {
 
 export default function Verifier() {
   const [session, setSession] = useState<Session | null>(() => load("qrw.verifier.session", null));
-  const [cache, setCache] = useState<Cache>(() => load("qrw.verifier.cache", { keys: {}, list: null }));
+  const [cache, setCache] = useState<Cache>(loadCache);
   const [queue, setQueue] = useState<QueuedRecord[]>(() => load("qrw.verifier.queue", []));
   const [online, setOnline] = useState(navigator.onLine);
   const [clockOffsetDays, setOffset] = useState(0); // demo control to show FR-21 list-age rules
@@ -56,7 +70,7 @@ export default function Verifier() {
   const [msg, setMsg] = useState<{ kind: string; text: string } | null>(null);
 
   useEffect(() => save("qrw.verifier.session", session), [session]);
-  useEffect(() => save("qrw.verifier.cache", cache), [cache]);
+  useEffect(() => saveCache(cache), [cache]);
   useEffect(() => save("qrw.verifier.queue", queue), [queue]);
   useEffect(() => {
     const on = () => setOnline(true), off = () => setOnline(false);

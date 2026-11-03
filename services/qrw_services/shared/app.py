@@ -3,6 +3,7 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from .config import Settings
@@ -23,6 +24,7 @@ def base_app(name: str, settings: Settings, lifespan=None) -> FastAPI:
     app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins,
                        allow_methods=["GET", "POST", "PUT", "PATCH"],
                        allow_headers=["Authorization", "Content-Type", "X-Service-Key"])
+    app.add_middleware(GZipMiddleware, minimum_size=1024)  # NFR-C3: large revocation lists travel compressed
     app.state.settings = settings
 
     @app.middleware("http")

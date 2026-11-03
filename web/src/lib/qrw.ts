@@ -5,7 +5,7 @@
  */
 import * as ed from "@noble/ed25519";
 import { sha512 } from "@noble/hashes/sha512";
-import { inflate } from "pako";
+import { deflate, inflate } from "pako";
 
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 const STRICT = { zip215: false } as const; // strict RFC 8032 checks, same as OpenSSL on the server
@@ -212,4 +212,15 @@ export function codeKind(text: string): CodeKind {
   if (text.startsWith("QRW1C:")) return "challenge";
   if (text.startsWith("QRW1R:")) return "response";
   return "unknown";
+}
+
+/** Compact form of the revocation ID list for the phone's storage (NFR-C3): deflate + base64url. */
+export function packIds(ids: string[]): string {
+  return b64urlEncode(deflate(new TextEncoder().encode(JSON.stringify(ids))));
+}
+
+export function unpackIds(packed: string): string[] {
+  const ids = JSON.parse(new TextDecoder().decode(inflate(b64urlDecode(packed))));
+  if (!Array.isArray(ids) || !ids.every((i) => typeof i === "string")) throw new Error("bad packed list");
+  return ids;
 }
