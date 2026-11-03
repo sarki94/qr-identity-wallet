@@ -21,7 +21,7 @@ The PWA clients (Wallet, Verifier, Issuer Portal) are added in the next sprint.
 
 **Without Docker (any OS):**
 ```bash
-pip install -e core -e "services[dev]"
+pip install -e ./core -e "./services[dev]"
 python services/scripts/run_local.py
 ```
 **With Docker:** `docker compose up --build`

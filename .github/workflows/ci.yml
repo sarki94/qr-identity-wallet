@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install
-        run: pip install -e core -e "services[dev]"
+        run: pip install -e ./core -e "./services[dev]"
       - name: Lint (Flake8)
         working-directory: services
         run: flake8 qrw_services tests
