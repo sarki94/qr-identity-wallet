@@ -1,0 +1,43 @@
+@startuml TM1
+!include style.iuml
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam componentBorderColor #1D6A4C
+skinparam componentBackgroundColor #F1F8F4
+left to right direction
+
+rectangle "B1 · Distribution point (offline)" as Z1 #FFF6E3 {
+  actor "Farmer" as F
+  [Wallet PWA\n(device key, PIN vault)] as W
+  [Verifier PWA\n(cached keys, list, queue)] as V
+  actor "Agent" as AG
+}
+rectangle "B2 · Staff browsers" as Z2 #FFF6E3 {
+  actor "Officer / Admin /\nAuditor" as ST
+  [Issuer Portal /\nAudit screens] as P
+}
+rectangle "Service network" as Z3 #F3F6F4 {
+  [Auth] as AU
+  [Issuer\n(signing key)] as IS
+  [Trust &\nRevocation] as TR
+  [Audit &\nSync] as AD
+  database "per-service\ndatabases (B6)" as DB
+}
+[NIMC (mock)] as NI
+
+F --> W : PIN
+W ..> V : QR: credential, answer
+V ..> W : QR: challenge nonce
+AG --> V : face check
+ST --> P
+P --> AU : B2 · password → JWT
+P --> IS : B2 · JWT (Officer)
+IS --> NI : B5 · NIN lookup
+IS --> TR : B3 · signed list + service key
+V ..> TR : B4 · pull keys, signed list
+V ..> AD : B4 · JWT (Agent) + records
+AU --> DB
+IS --> DB
+TR --> DB
+AD --> DB
+@enduml
