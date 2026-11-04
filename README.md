@@ -86,4 +86,4 @@ Property-based tests (Hypothesis) prove security properties over many random inp
 
 ## AI use statement
 
-This project was developed with AI assistance (Claude), used for design discussion, code drafting and review. All design decisions, field evidence and final content were directed and verified by the author. Commits made with AI assistance carry a `Co-Authored-By` trailer.
+This project was developed with AI assistance (Claude), used for design discussion, code and document drafting, and review. The field evidence comes from the author, who directed and approved the design decisions and verified the result. Commits made with AI assistance carry a `Co-Authored-By` trailer. The full statement is in the Technical Report (QRW-TR-07, Section 8).
