@@ -52,14 +52,13 @@ class Doc {
   // ---- headings -------------------------------------------------------
   h1(title) {
     this.section += 1; this.sub = 0; this.subsub = 0;
-    this.body.push(new Paragraph({ children: [new PageBreak()] }));
-    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER,
+    // The body section already starts on a new page; a page break before its first heading made LibreOffice drop it.
+    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, pageBreakBefore: this.body.length > 0,
       children: [new TextRun({ text: `${this.section}. ${title.toUpperCase()}`, bold: true, font: FONT, size: PT })] }));
   }
   appendix(letter, title) {
     this.section = letter; this.sub = 0; this.subsub = 0;
-    this.body.push(new Paragraph({ children: [new PageBreak()] }));
-    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER,
+    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, pageBreakBefore: true,
       children: [new TextRun({ text: `APPENDIX ${letter}: ${title.toUpperCase()}`, bold: true, font: FONT, size: PT })] }));
   }
   h2(title) {
@@ -221,7 +220,7 @@ class Doc {
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.LOWER_ROMAN } }, type: SectionType.NEXT_PAGE },
           footers: { default: footer() }, children: [...control, new Paragraph({ children: [new PageBreak()] }), tocTitle, toc] },
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL } }, type: SectionType.NEXT_PAGE },
-          footers: { default: footer() }, children: this.body.slice(1) /* drop the first page break */ },
+          footers: { default: footer() }, children: this.body },
         ...this.landscape.map((children) => ({ properties: { type: SectionType.NEXT_PAGE, page: { size: { width: PAGE_W, height: PAGE_H, orientation: PageOrientation.LANDSCAPE }, margin: MARGIN } },
           footers: { default: footer() }, children })),
       ],
