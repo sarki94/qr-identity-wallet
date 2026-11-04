@@ -14,7 +14,7 @@ export default function App() {
   return (
     <>
       <nav className="nav noprint">
-        <Link to="/">Home</Link><Link to="/demo">Guided demo</Link><Link to="/verifier">Verifier</Link>
+        <Link to="/">Home</Link><Link to="/demo">Demo</Link><Link to="/verifier">Verifier</Link>
         <Link to="/wallet">Wallet</Link><Link to="/portal">Portal</Link><Link to="/audit">Audit</Link>
       </nav>
       <Screen key={path} />
