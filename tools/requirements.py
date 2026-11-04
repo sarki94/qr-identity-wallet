@@ -7,7 +7,7 @@ Status is honest: Implemented, Partial (what is missing is stated) or Deferred.
 
 UC = "UC diagram (Fig. 4.1)"
 SD1, SD2, SD3 = "SD-1 Issuance sequence (Fig. 4.2)", "SD-2 Offline verification sequence (Fig. 4.3)", "SD-3 Revocation & sync sequence (Fig. 4.4)"
-CD, SM1, SM2 = "Class diagram (Fig. 4.5)", "SM-1 Verification state machine (Fig. 4.6)", "SM-2 Credential lifecycle (Fig. 4.7)"
+CD, SM1, SM2 = "Class diagram (Fig. 3.3)", "SM-1 Verification state machine (Fig. 3.1)", "SM-2 Credential lifecycle (Fig. 3.2)"
 
 REQUIREMENTS = [
     # Enrolment & issuance

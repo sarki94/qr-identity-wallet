@@ -1,7 +1,6 @@
 @startuml UC
 !include style.iuml
 left to right direction
-title Figure 4.1: Use-Case Diagram, Offline-First QR Identity Wallet
 
 actor "Farmer\n(Holder)" as Farmer
 actor "Enrolment\nOfficer" as Officer

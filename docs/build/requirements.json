@@ -1,0 +1,495 @@
+{
+ "reqs": [
+  {
+   "id": "FR-01",
+   "kind": "FR",
+   "category": "Enrolment",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Officer looks up a farmer by NIN through NIMC before enrolment.",
+   "uml": "UC diagram (Fig. 4.1) UC-01; SD-1 Issuance sequence (Fig. 4.2)",
+   "code": "issuer/app.py enrol()"
+  },
+  {
+   "id": "FR-02",
+   "kind": "FR",
+   "category": "Enrolment",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "Farmer photo captured and embedded as a small signed thumbnail.",
+   "uml": "Class diagram (Fig. 3.3) Credential.photo",
+   "code": "web Portal.tsx photoToB64(); qrw_core.credential"
+  },
+  {
+   "id": "FR-03",
+   "kind": "FR",
+   "category": "Issuance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Issuer signs a credential with ID, masked NIN, name, ward, LGA, state, dates, key ID, level and (L2) holder key.",
+   "uml": "SD-1 Issuance sequence (Fig. 4.2); SM-2 Credential lifecycle (Fig. 3.2)",
+   "code": "qrw_core.credential.issue_credential(); issuer/app.py issue()"
+  },
+  {
+   "id": "FR-04",
+   "kind": "FR",
+   "category": "Issuance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "L2: wallet generates a device key; officer binds its public key into the credential.",
+   "uml": "SD-1 Issuance sequence (Fig. 4.2); SM-2 Credential lifecycle (Fig. 3.2) PendingBinding",
+   "code": "web qrw.ts newHolderKey(); issuer/app.py issue()"
+  },
+  {
+   "id": "FR-05",
+   "kind": "FR",
+   "category": "Issuance",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "L1: printable paper-wallet card with signed QR.",
+   "uml": "UC diagram (Fig. 4.1) UC-04; SM-2 Credential lifecycle (Fig. 3.2)",
+   "code": "web Portal.tsx (print); qrw_core.credential"
+  },
+  {
+   "id": "FR-06",
+   "kind": "FR",
+   "category": "Issuance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "At most one active credential per NIN; re-issue revokes the old one atomically (D8).",
+   "uml": "SD-1 Issuance sequence (Fig. 4.2) opt re-issue; Class diagram (Fig. 3.3) rule 2",
+   "code": "issuer/app.py issue() single transaction"
+  },
+  {
+   "id": "FR-07",
+   "kind": "FR",
+   "category": "Revocation",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Officer revokes a credential with a recorded reason.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4); SM-2 Credential lifecycle (Fig. 3.2) Revoked",
+   "code": "issuer/app.py revoke()"
+  },
+  {
+   "id": "FR-08",
+   "kind": "FR",
+   "category": "Trust",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Trust service publishes issuer public keys with key IDs.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
+   "code": "trust/app.py keys()"
+  },
+  {
+   "id": "FR-09",
+   "kind": "FR",
+   "category": "Trust",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Signed, versioned revocation list; Trust verifies it and refuses rollback (D11).",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4); Class diagram (Fig. 3.3) RevocationList",
+   "code": "qrw_core.revocation; trust/app.py receive()"
+  },
+  {
+   "id": "FR-10",
+   "kind": "FR",
+   "category": "Wallet",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "Several farmer profiles on one shared phone, each with its own key and PIN.",
+   "uml": "UC diagram (Fig. 4.1) UC-06",
+   "code": "web Wallet.tsx"
+  },
+  {
+   "id": "FR-11",
+   "kind": "FR",
+   "category": "Wallet",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Credential shown only after the profile PIN is entered.",
+   "uml": "UC diagram (Fig. 4.1) UC-07",
+   "code": "web Wallet.tsx unlock(); vault.ts"
+  },
+  {
+   "id": "FR-12",
+   "kind": "FR",
+   "category": "Wallet",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Wallet signs (challenge + credential ID) with the device key and shows the answer QR.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "qrw_core.challenge.sign_challenge(); web qrw.ts signChallenge()"
+  },
+  {
+   "id": "FR-13",
+   "kind": "FR",
+   "category": "Wallet",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "All wallet functions work with no network after enrolment.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "web Wallet.tsx (no API calls); PWA service worker"
+  },
+  {
+   "id": "FR-14",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Partial",
+   "text": "Agent logs in online once, then works offline for 7 days. (Agent PIN unlock not built: the 7-day token is kept on the phone.)",
+   "uml": "UC diagram (Fig. 4.1) UC-11",
+   "code": "auth/app.py token(); web Verifier.tsx"
+  },
+  {
+   "id": "FR-15",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Verifier downloads keys and revocation list when online and on demand, checking the list signature itself.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
+   "code": "web Verifier.tsx sync(); qrw.ts verifyRevocationList()"
+  },
+  {
+   "id": "FR-16",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Verifier checks the issuer signature offline.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3); SM-1 Verification state machine (Fig. 3.1) CredentialRead",
+   "code": "qrw_core.credential.verify_credential(); web qrw.ts verifyCredential()"
+  },
+  {
+   "id": "FR-17",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "L2: fresh random challenge; wallet answer verified against the holder key.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3); SM-1 Verification state machine (Fig. 3.1) ChallengeShown",
+   "code": "qrw_core.challenge; web qrw.ts verifyChallengeResponse()"
+  },
+  {
+   "id": "FR-18",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Verifier checks expiry and revocation against its cached list.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1)",
+   "code": "qrw_core.credential.verify_credential()"
+  },
+  {
+   "id": "FR-19",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Signed photo or details shown; agent must confirm the face before acceptance.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1) AwaitingFaceCheck",
+   "code": "web Verifier.tsx face step"
+  },
+  {
+   "id": "FR-20",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Verdict shown as Accepted (L2), Accepted (L1) or Rejected with reason.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1)",
+   "code": "web Verifier.tsx"
+  },
+  {
+   "id": "FR-21",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Warn when the list is older than 7 days; refuse acceptances after 30 days.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1) guard",
+   "code": "web Verifier.tsx SOFT_DAYS/HARD_DAYS"
+  },
+  {
+   "id": "FR-22",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Every attempt (accepted or rejected) recorded in a local queue.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1) RecordQueued",
+   "code": "web Verifier.tsx finish()"
+  },
+  {
+   "id": "FR-23",
+   "kind": "FR",
+   "category": "Verifier",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "No proxy or delegated presentation; the holder must be present (D6).",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "qrw_core.challenge; Verifier face check"
+  },
+  {
+   "id": "FR-24",
+   "kind": "FR",
+   "category": "Audit",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Queued records uploaded in batches and appended to a hash chain; agent identity from the token.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
+   "code": "audit/app.py upload(); qrw_core.audit"
+  },
+  {
+   "id": "FR-25",
+   "kind": "FR",
+   "category": "Audit",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Auditor filters records and runs a chain-integrity check.",
+   "uml": "UC diagram (Fig. 4.1) UC-13",
+   "code": "audit/app.py check_chain(); qrw_core.audit.verify_chain()"
+  },
+  {
+   "id": "FR-26",
+   "kind": "FR",
+   "category": "Audit",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "Flag a credential accepted at two points within 24 hours (possible cloning).",
+   "uml": "UC diagram (Fig. 4.1) UC-14",
+   "code": "audit/app.py anomalies()"
+  },
+  {
+   "id": "FR-27",
+   "kind": "FR",
+   "category": "Access",
+   "priority": "M",
+   "status": "Partial",
+   "text": "Staff sign in with username and password. (TOTP MFA for Admin/Auditor deferred: cut list item 2.)",
+   "uml": "UC diagram (Fig. 4.1) UC-11; SD-1 Issuance sequence (Fig. 4.2)",
+   "code": "auth/app.py token()"
+  },
+  {
+   "id": "FR-28",
+   "kind": "FR",
+   "category": "Access",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Every endpoint enforces role-based access (Officer, Agent, Admin, Auditor).",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "shared/security.py require_roles()"
+  },
+  {
+   "id": "FR-29",
+   "kind": "FR",
+   "category": "Access",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "Admin creates, disables, unlocks and assigns staff to distribution points.",
+   "uml": "UC diagram (Fig. 4.1) UC-12",
+   "code": "auth/app.py users endpoints"
+  },
+  {
+   "id": "NFR-P1",
+   "kind": "NFR",
+   "category": "Performance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Offline verification (scan to verdict, excluding people) within 3 s on a low-end phone.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "qrw_core.credential; web qrw.ts"
+  },
+  {
+   "id": "NFR-P2",
+   "kind": "NFR",
+   "category": "Performance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Credential issuance completes within 5 s.",
+   "uml": "SD-1 Issuance sequence (Fig. 4.2)",
+   "code": "issuer/app.py issue()"
+  },
+  {
+   "id": "NFR-P3",
+   "kind": "NFR",
+   "category": "Performance",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Core verification available with zero connectivity; services degrade gracefully when one is down.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "web Verifier.tsx; issuer publish retry"
+  },
+  {
+   "id": "NFR-S1",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Ed25519 signing; issuer private key only in the Issuer, encrypted at rest (HSM in production).",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "qrw_core.keys; services/secrets.py"
+  },
+  {
+   "id": "NFR-S2",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Holder private keys sealed with a PIN-derived key (PBKDF2 + AES-GCM).",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "web vault.ts"
+  },
+  {
+   "id": "NFR-S3",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Partial",
+   "text": "TLS on all traffic. (Prototype: HTTPS between phones and the app; services on localhost behind the proxy. Production: TLS reverse proxy.)",
+   "uml": "Deployment",
+   "code": "web vite.config.ts basicSsl"
+  },
+  {
+   "id": "NFR-S4",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Data minimisation: masked NIN only; full NIN never stored (keyed hash, D13).",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "qrw_core.credential.mask_nin(); issuer nin_hash()"
+  },
+  {
+   "id": "NFR-S5",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Fail securely: any error, unknown key or bad input is a rejection, never a crash or leak.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1)",
+   "code": "verify_credential(); shared/app.py fail_safely()"
+  },
+  {
+   "id": "NFR-S6",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Audit records tamper-evident (hash chain).",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "qrw_core.audit"
+  },
+  {
+   "id": "NFR-S7",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Login rate-limited; account locks after 5 failed logins.",
+   "uml": "-",
+   "code": "shared/security.py RateLimiter; auth lockout"
+  },
+  {
+   "id": "NFR-S8",
+   "kind": "NFR",
+   "category": "Security",
+   "priority": "M",
+   "status": "Partial",
+   "text": "Nigeria Data Protection Act 2023 principles. (Minimisation and purpose limitation built in; consent capture is a procedural step at enrolment.)",
+   "uml": "-",
+   "code": "Design + procedure"
+  },
+  {
+   "id": "NFR-U1",
+   "kind": "NFR",
+   "category": "Usability",
+   "priority": "S",
+   "status": "Partial",
+   "text": "Hausa and English. (Verdict strings in Hausa; full translation deferred.)",
+   "uml": "-",
+   "code": "web Verifier.tsx"
+  },
+  {
+   "id": "NFR-U2",
+   "kind": "NFR",
+   "category": "Usability",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Verdicts readable without reading English: colour, icon, Hausa word.",
+   "uml": "SM-1 Verification state machine (Fig. 3.1)",
+   "code": "web Verifier.tsx; styles.css"
+  },
+  {
+   "id": "NFR-U3",
+   "kind": "NFR",
+   "category": "Usability",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "An L2 verification takes at most 4 agent taps.",
+   "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
+   "code": "web Verifier.tsx"
+  },
+  {
+   "id": "NFR-U4",
+   "kind": "NFR",
+   "category": "Usability",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Usable on 5-inch screens; touch targets at least 48 px.",
+   "uml": "-",
+   "code": "web styles.css .btn min-height 48px"
+  },
+  {
+   "id": "NFR-C1",
+   "kind": "NFR",
+   "category": "Capacity",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Credential QR at most 1,800 bytes, including a photo thumbnail.",
+   "uml": "Class diagram (Fig. 3.3)",
+   "code": "qrw_core.qr"
+  },
+  {
+   "id": "NFR-C2",
+   "kind": "NFR",
+   "category": "Capacity",
+   "priority": "S",
+   "status": "Implemented",
+   "text": "Wallet stores up to 5 profiles in at most 5 MB.",
+   "uml": "-",
+   "code": "web Wallet.tsx; vault.ts"
+  },
+  {
+   "id": "NFR-C3",
+   "kind": "NFR",
+   "category": "Capacity",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "Revocation list of 100,000 entries transferred and cached in at most 2 MB (compressed). First test failed at 2.40 MB uncompressed; fixed with gzip in transit and deflate in the phone cache.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
+   "code": "shared/app.py GZipMiddleware; web qrw.ts packIds()"
+  },
+  {
+   "id": "NFR-C4",
+   "kind": "NFR",
+   "category": "Capacity",
+   "priority": "M",
+   "status": "Implemented",
+   "text": "At least 2,000 queued records per upload.",
+   "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
+   "code": "audit/app.py MAX_BATCH"
+  }
+ ],
+ "manual": {
+  "FR-19": "Demo: Verifier face-check step (TC-SYS-002 screenshot 08)",
+  "FR-20": "Demo: TC-SYS-002 screenshots 09-13",
+  "FR-21": "Demo: Verifier demo clock +8 / +31 days",
+  "NFR-S8": "Inspection: data fields in credential and Issuer DB",
+  "NFR-U1": "Inspection: Verifier verdict strings",
+  "NFR-U2": "Inspection: TC-SYS-002 screenshots 09-10",
+  "NFR-U3": "Demo: count taps in TC-SYS-002 flow (scan, scan answer, Yes)",
+  "NFR-U4": "Inspection: styles.css",
+  "NFR-S3": "Inspection: npm run phone serves HTTPS"
+ }
+}

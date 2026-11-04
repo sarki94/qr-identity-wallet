@@ -1,0 +1,48 @@
+@startuml AR1
+!include style.iuml
+skinparam componentStyle rectangle
+skinparam componentBorderColor #1D6A4C
+skinparam componentBackgroundColor #F1F8F4
+skinparam nodeBorderColor #56665E
+skinparam nodeBackgroundColor #FAFCFB
+skinparam databaseBorderColor #56665E
+left to right direction
+
+node "Farmer's phone\n(shared Android)" as FP {
+  [Citizen Wallet\nPWA] as W
+}
+node "Paper wallet\n(feature-phone users)" as PW
+node "Agent's phone\n(distribution point, often offline)" as AP {
+  [Verifier\nPWA] as V
+  database "Local cache\nkeys · list · queue" as VC
+}
+node "LGA office laptop" as OL {
+  [Issuer Portal\nPWA] as P
+}
+node "Service host (Docker)" as SH {
+  [0 · Auth] as AU
+  [1 · Issuer] as IS
+  [2 · Trust &\nRevocation] as TR
+  [3 · Audit &\nSync] as AD
+  database "auth.db" as DBA
+  database "issuer.db\n+ signing key" as DBI
+  database "trust.db" as DBT
+  database "audit.db\n(hash chain)" as DBD
+}
+node "NIMC\n(mocked)" as NI
+
+W ..> V : QR, offline\n(credential, challenge, answer)
+PW ..> V : printed QR, offline
+P --> AU : login (sync)
+P --> IS : enrol / issue / revoke (sync)
+IS --> NI : NIN lookup (sync)
+IS --> TR : signed revocation list (sync)
+V --> AU : agent login (sync, once)
+V ..> TR : pull keys + list (async)
+V ..> AD : push records (async)
+V --> VC
+AU --> DBA
+IS --> DBI
+TR --> DBT
+AD --> DBD
+@enduml

@@ -1,6 +1,5 @@
 @startuml SD1
 !include style.iuml
-title Figure 4.2: Sequence Diagram, Enrolment and Credential Issuance (synchronous)
 autonumber
 actor "Enrolment\nOfficer" as O
 participant "Issuer\nPortal" as P

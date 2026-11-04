@@ -1,6 +1,5 @@
 @startuml SD2
 !include style.iuml
-title Figure 4.3: Sequence Diagram, Offline Verification at a Distribution Point
 autonumber
 actor Farmer as F
 participant "Citizen Wallet\n(or paper wallet)" as W

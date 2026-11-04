@@ -1,6 +1,5 @@
 @startuml SM1
 !include style.iuml
-title Figure 4.6: State Machine, Verification Session (FR-16 to FR-22)
 hide empty description
 [*] --> Idle
 Idle --> CredentialRead : scan credential QR

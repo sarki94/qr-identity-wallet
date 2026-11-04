@@ -1,6 +1,5 @@
 @startuml SD3
 !include style.iuml
-title Figure 4.4: Sequence Diagram, Revocation and Asynchronous Synchronisation
 autonumber
 actor "Enrolment\nOfficer" as O
 participant "Issuer\nService" as I

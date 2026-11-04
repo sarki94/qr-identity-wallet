@@ -1,6 +1,5 @@
 @startuml CD
 !include style.iuml
-title Figure 4.5: Class Diagram, Domain Model by Service
 hide methods
 
 package "Issuer Service" {
