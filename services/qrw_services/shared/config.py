@@ -20,6 +20,7 @@ class Settings:
     nimc_url: str = field(default_factory=lambda: os.getenv("QRW_NIMC_URL", "http://localhost:8005"))
     cors_origins: list = field(default_factory=lambda: _list(os.getenv(
         "QRW_CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")))
+    api_docs: bool = field(default_factory=lambda: os.getenv("QRW_API_DOCS", "1") == "1")  # set 0 in production
     seed_demo_users: bool = field(default_factory=lambda: os.getenv("QRW_SEED_DEMO", "1") == "1")
     credential_validity_days: int = 365
     staff_token_hours: int = 8

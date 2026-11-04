@@ -1,0 +1,58 @@
+[
+  {
+    "risk": "Medium",
+    "alert": "Content Security Policy (CSP) Header Not Set",
+    "plugin": "10038",
+    "urls": [
+      "http://127.0.0.1:8001/docs",
+      "http://127.0.0.1:8002/docs",
+      "http://127.0.0.1:8003/docs",
+      "http://127.0.0.1:8004/docs",
+      "http://127.0.0.1:8005/docs"
+    ]
+  },
+  {
+    "risk": "Low",
+    "alert": "Cross-Domain JavaScript Source File Inclusion",
+    "plugin": "10017",
+    "urls": [
+      "http://127.0.0.1:8001/docs",
+      "http://127.0.0.1:8002/docs",
+      "http://127.0.0.1:8003/docs",
+      "http://127.0.0.1:8004/docs",
+      "http://127.0.0.1:8005/docs"
+    ]
+  },
+  {
+    "risk": "Informational",
+    "alert": "Authentication Request Identified",
+    "plugin": "10111",
+    "urls": [
+      "http://127.0.0.1:8001/token",
+      "http://127.0.0.1:8001/users"
+    ]
+  },
+  {
+    "risk": "Informational",
+    "alert": "Modern Web Application",
+    "plugin": "10109",
+    "urls": [
+      "http://127.0.0.1:8001/docs",
+      "http://127.0.0.1:8002/docs",
+      "http://127.0.0.1:8003/docs",
+      "http://127.0.0.1:8004/docs",
+      "http://127.0.0.1:8005/docs"
+    ]
+  },
+  {
+    "risk": "Informational",
+    "alert": "User Agent Fuzzer",
+    "plugin": "10104",
+    "urls": [
+      "http://127.0.0.1:8001/token",
+      "http://127.0.0.1:8001/users/",
+      "http://127.0.0.1:8002/credentials",
+      "http://127.0.0.1:8002/enrolments"
+    ]
+  }
+]

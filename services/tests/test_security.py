@@ -116,6 +116,7 @@ def test_tc_sec_011_api_docs_page_has_a_strict_content_security_policy(system):
         assert "frame-ancestors 'none'" in csp and "object-src 'none'" in csp
         script_src = re.search(r"script-src ([^;]*)", csp).group(1)
         assert "'unsafe-inline'" not in script_src and "'unsafe-eval'" not in script_src
+        assert "'unsafe-inline'" not in re.search(r"style-src ([^;]*)", csp).group(1)
         for body in re.findall(r"<script>(.*?)</script>", r.text, re.S):  # every inline script is hash-allowed
             digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
             assert f"'sha256-{digest}'" in script_src

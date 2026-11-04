@@ -93,10 +93,10 @@ Format: the lecturer's STRIDE table (Threat Category | Security Property Violate
 | SAST | Bandit | 1 low finding (B105, `"bearer"` token type) triaged as false positive; 0 issues after triage | `evidence/bandit-services-*.txt`, CI |
 | Linting | Flake8 | Clean | CI |
 | Dependency scanning (SCA) | pip-audit, npm audit | Python clean. Web: react-router-dom open-redirect advisories found → dependency removed → 0 runtime vulnerabilities | `evidence/dependency-audit.md` |
-| DAST-style black-box tests | pytest against running services | 22 cases: injection, JWT forgery, expiry, spoofing, oversize, headers, CORS, error leakage. All pass | `services/tests/test_security.py` |
+| DAST-style black-box tests | pytest against running services | 24 cases: injection, JWT forgery, expiry, spoofing, oversize, headers, CORS, error leakage, docs-page CSP. All pass | `services/tests/test_security.py` |
 | Property-based fuzzing | Hypothesis | Every single-bit flip rejected; arbitrary QR text never crashes the decoder | `core/tests/test_credential.py`, `test_qr.py` |
 | Cross-implementation | Vitest + Python vectors | Browser verifier and Python issuer agree byte for byte | `web/tests/qrw.test.ts` |
-| Optional DAST scan | OWASP ZAP baseline | Run on the developer laptop with Docker Desktop: `docker run --rm -t zaproxy/zap-stable zap-baseline.py -t http://host.docker.internal:8002/docs` | Report to be added if run |
+| DAST scan | OWASP ZAP 2.16.1 (OpenAPI import, authenticated, full active scan) | Before: 0 High, 1 Medium (no CSP on `/docs`), 1 Low. Fixed test-first (TC-SEC-011, -012). After: 0 High, 0 Medium, 1 Low accepted | `evidence/zap/README.md`, `tools/zap_scan.py` |
 
 ## 6. Residual risks (carried to the risk register)
 
