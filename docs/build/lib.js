@@ -99,7 +99,7 @@ class Doc {
   }
   nextNumInstance() { this._inst = (this._inst || 0) + 1; return this._inst; }
   code(lines) {
-    lines.forEach((l, i) => this.body.push(new Paragraph({ spacing: { line: 240, lineRule: LineRuleType.AUTO, after: i === lines.length - 1 ? 160 : 0 }, indent: { left: 360 },
+    lines.forEach((l, i) => this.body.push(new Paragraph({ spacing: { line: 240, lineRule: LineRuleType.AUTO, after: i === lines.length - 1 ? 160 : 0 }, indent: { left: 360 }, keepNext: i < lines.length - 1,
       shading: { type: ShadingType.CLEAR, fill: "F2F2F2", color: "auto" },
       children: [new TextRun({ text: l || " ", font: "Consolas", size: 18 })] })));
   }
@@ -117,12 +117,13 @@ class Doc {
     const size = opts.size || 20;
     this.body.push(new Paragraph({ keepNext: true, spacing: { before: 120, after: 80, line: 240, lineRule: LineRuleType.AUTO },
       children: no ? [new TextRun({ text: `Table ${no}: `, bold: true, font: FONT, size: PT }), ...runs(caption)] : runs(`**${caption}**`) }));
+    const keepAll = rows.length <= (opts.keepRows || 14); // small tables stay on one page
     const cell = (text, i, header, last) => new TableCell({
       width: { size: widths[i], type: WidthType.DXA },
       margins: { top: 50, bottom: 50, left: 80, right: 80 },
       shading: header ? { type: ShadingType.CLEAR, fill: "F2F2F2", color: "auto" } : undefined,
       borders: { left: NONE, right: NONE, top: header ? RULE : NONE, bottom: header ? RULE : last ? RULE : THIN },
-      children: String(text).split("\n").map((line) => new Paragraph({ spacing: { line: 240, lineRule: LineRuleType.AUTO }, children: runs(line, { size, bold: header || undefined }) })),
+      children: String(text).split("\n").map((line) => new Paragraph({ keepNext: keepAll && !last, spacing: { line: 240, lineRule: LineRuleType.AUTO }, children: runs(line, { size, bold: header || undefined }) })),
     });
     const tRows = [new TableRow({ tableHeader: true, cantSplit: true, children: headers.map((h, i) => cell(h, i, true, false)) })];
     rows.forEach((r, ri) => tRows.push(new TableRow({ cantSplit: true, children: r.map((c, i) => cell(c, i, false, ri === rows.length - 1)) })));

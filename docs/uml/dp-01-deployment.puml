@@ -1,0 +1,47 @@
+@startuml DP1
+!include style.iuml
+skinparam nodeBorderColor #56665E
+skinparam nodeBackgroundColor #FAFCFB
+skinparam componentBorderColor #1D6A4C
+skinparam componentBackgroundColor #F1F8F4
+skinparam artifactBorderColor #56665E
+skinparam artifactBackgroundColor #F3F6F4
+left to right direction
+
+node "Service host" {
+  node "Docker Compose (one image: qrw-services)" {
+    component "auth :8001" as A
+    component "issuer :8002" as I
+    component "trust :8003" as T
+    component "audit :8004" as U
+    component "mock-nimc :8005" as N
+    component "init-secrets\n(run once)" as S
+  }
+  artifact "volume: secrets\n(keys, encrypted)" as VS
+  artifact "volumes: auth-data, issuer-data,\ntrust-data, audit-data" as VD
+  node "Web server\n(Vite preview / any static host)\nHTTPS · /api/<service> proxy" as WS {
+    artifact "PWA build (dist/)\nservice worker" as PWA
+  }
+}
+node "Android phones / laptops\n(Chrome, Edge)" as DEV {
+  component "Wallet · Verifier · Portal · Audit\n(installed PWA)" as APP
+  artifact "localStorage:\nsealed keys, credential,\ncompressed list, record queue" as LS
+}
+
+S --> VS : creates
+A --> VS
+I --> VS
+T --> VS
+A --> VD
+I --> VD
+T --> VD
+U --> VD
+APP --> WS : HTTPS (when online)
+WS --> A
+WS --> I
+WS --> T
+WS --> U
+I --> N
+I --> T
+APP --> LS
+@enduml

@@ -1,0 +1,88 @@
+@startuml ERD
+!include style.iuml
+hide circle
+skinparam linetype ortho
+skinparam classAttributeFontName "DejaVu Sans Mono"
+skinparam classAttributeFontSize 11
+
+package "auth.db (Auth service)" {
+  entity users {
+    * id : INTEGER <<PK>>
+    --
+    * username : VARCHAR(64) <<UNIQUE>>
+    * password_hash : VARCHAR(128)
+    * salt : VARCHAR(64)
+    * role : VARCHAR(16)
+    point_id : VARCHAR(32)
+    * active : BOOLEAN
+    * failed_logins : INTEGER
+  }
+}
+
+package "issuer.db (Issuer service)" {
+  entity farmers {
+    * id : INTEGER <<PK>>
+    --
+    * nin_hash : CHAR(64) <<UNIQUE>>
+    * nin_masked : CHAR(11)
+    * name : VARCHAR(120)
+    * ward, lga, state : VARCHAR(80)
+    * enrolled_by : VARCHAR(64)
+    * enrolled_at : TIMESTAMP
+  }
+  entity credentials {
+    * id : VARCHAR(40) <<PK>>
+    --
+    * farmer_id : INTEGER <<FK>>
+    * level : CHAR(2)
+    holder_public_key : VARCHAR(64)
+    * issued_on, expires_on : DATE
+    * status : VARCHAR(10)
+    revoked_reason : VARCHAR(20)
+    revoked_at : TIMESTAMP
+    * issued_by : VARCHAR(64)
+    * qr_text : TEXT
+  }
+  entity revocation_state {
+    * id : INTEGER <<PK>> (=1)
+    --
+    * version : INTEGER
+    * published_version : INTEGER
+  }
+}
+
+package "trust.db (Trust & Revocation)" {
+  entity published_list {
+    * id : INTEGER <<PK>> (=1)
+    --
+    * version : INTEGER
+    * payload_b64 : TEXT
+    * signature_b64 : TEXT
+    * received_at : TIMESTAMP
+  }
+}
+
+package "audit.db (Audit & Sync)" {
+  entity records {
+    * seq : INTEGER <<PK, AUTO>>
+    --
+    * record_id : VARCHAR(64) <<UNIQUE>>
+    * credential_id : VARCHAR(40) <<INDEX>>
+    * result : VARCHAR(10)
+    level : CHAR(2)
+    reason : VARCHAR(40)
+    point_id : VARCHAR(32)
+    * agent : VARCHAR(64)
+    * verified_at : VARCHAR(40)
+    * received_at : TIMESTAMP
+    * prev_hash : CHAR(64)
+    * hash : CHAR(64)
+  }
+}
+
+farmers ||--o{ credentials : "owns"
+credentials }o..o| published_list : "id listed in signed payload (logical)"
+records }o..|| credentials : "credential_id (logical, cross-service)"
+records }o..|| users : "agent = username (from JWT)"
+records |o..o| records : "prev_hash → hash"
+@enduml
