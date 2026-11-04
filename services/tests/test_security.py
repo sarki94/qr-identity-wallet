@@ -103,3 +103,30 @@ def test_tc_sec_010_errors_never_leak_internals(system, tokens):
     r = s.get("/boom")
     assert r.status_code == 500 and r.json() == {"detail": "internal error"}
     assert "ZeroDivisionError" not in r.text and "Traceback" not in r.text
+
+
+@pytest.mark.req("NFR-S5")
+def test_tc_sec_011_api_docs_page_has_a_strict_content_security_policy(system):
+    """Found by the OWASP ZAP scan (rule 10038): the /docs pages had no CSP."""
+    import hashlib
+    import re
+    for name in ("auth", "issuer", "trust", "audit", "nimc"):
+        r = system[name].get("/docs")
+        csp = r.headers.get("content-security-policy", "")
+        assert "frame-ancestors 'none'" in csp and "object-src 'none'" in csp
+        script_src = re.search(r"script-src ([^;]*)", csp).group(1)
+        assert "'unsafe-inline'" not in script_src and "'unsafe-eval'" not in script_src
+        for body in re.findall(r"<script>(.*?)</script>", r.text, re.S):  # every inline script is hash-allowed
+            digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
+            assert f"'sha256-{digest}'" in script_src
+
+
+@pytest.mark.req("NFR-S5")
+def test_tc_sec_012_api_docs_can_be_switched_off_for_production(settings):
+    from dataclasses import replace
+
+    from fastapi.testclient import TestClient
+    from qrw_services.trust.app import create_app
+    with TestClient(create_app(replace(settings, api_docs=False))) as trust:
+        assert trust.get("/docs").status_code == 404 and trust.get("/openapi.json").status_code == 404
+        assert trust.get("/keys").status_code == 200
