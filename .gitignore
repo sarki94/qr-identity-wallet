@@ -20,3 +20,4 @@ services/data/
 web/dist/
 web/e2e/screenshots/
 docs/evidence/junit-*.xml
+web/coverage/

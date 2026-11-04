@@ -1,0 +1,24 @@
+_______________ coverage: platform linux, python 3.13.16-final-0 _______________
+
+Name                              Stmts   Miss  Cover
+-----------------------------------------------------
+qrw_services/__init__.py              0      0   100%
+qrw_services/audit/__init__.py        0      0   100%
+qrw_services/audit/app.py            96      3    97%
+qrw_services/auth/__init__.py         0      0   100%
+qrw_services/auth/app.py            116      5    96%
+qrw_services/issuer/__init__.py       0      0   100%
+qrw_services/issuer/app.py          180      5    97%
+qrw_services/nimc/__init__.py         0      0   100%
+qrw_services/nimc/app.py             19      1    95%
+qrw_services/secrets.py              21      3    86%
+qrw_services/shared/__init__.py       0      0   100%
+qrw_services/shared/app.py           40      0   100%
+qrw_services/shared/config.py        29      1    97%
+qrw_services/shared/db.py             9      0   100%
+qrw_services/shared/security.py      46      1    98%
+qrw_services/trust/__init__.py        0      0   100%
+qrw_services/trust/app.py            64      2    97%
+-----------------------------------------------------
+TOTAL                               620     21    97%
+49 passed, 1 warning in 28.81s

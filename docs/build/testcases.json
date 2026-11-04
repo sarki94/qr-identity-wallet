@@ -1,0 +1,1475 @@
+[
+ {
+  "id": "TC-CORE-001",
+  "suite": "core",
+  "file": "core/tests/test_encoding.py",
+  "level": "Unit",
+  "technique": "Example-based (RFC vectors)",
+  "title": "Base45 matches RFC 9285 vectors",
+  "note": "",
+  "reqs": [
+   "NFR-C1"
+  ],
+  "cases": 3,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-CORE-002",
+  "suite": "core",
+  "file": "core/tests/test_encoding.py",
+  "level": "Unit",
+  "technique": "Example-based (RFC vectors)",
+  "title": "Base45 decodes RFC 9285 vector",
+  "note": "",
+  "reqs": [
+   "NFR-C1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-CORE-003",
+  "suite": "core",
+  "file": "core/tests/test_encoding.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Base45 round trip property",
+  "note": "",
+  "reqs": [
+   "NFR-C1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.031
+ },
+ {
+  "id": "TC-CORE-004",
+  "suite": "core",
+  "file": "core/tests/test_encoding.py",
+  "level": "Unit",
+  "technique": "Example-based (RFC vectors)",
+  "title": "Invalid base45 raises value error",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 4,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-CORE-005",
+  "suite": "core",
+  "file": "core/tests/test_encoding.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Base64url round trip property",
+  "note": "",
+  "reqs": [
+   "NFR-C1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.032
+ },
+ {
+  "id": "TC-CORE-010",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Issued L2 credential verifies",
+  "note": "",
+  "reqs": [
+   "FR-03",
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-011",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "L1 credential without holder key verifies",
+  "note": "",
+  "reqs": [
+   "FR-05"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-012",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "L2 without holder key cannot be issued",
+  "note": "",
+  "reqs": [
+   "FR-04"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-013",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Tampered name is rejected",
+  "note": "",
+  "reqs": [
+   "FR-16",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-014",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Any single bit flip is rejected",
+  "note": "",
+  "reqs": [
+   "FR-16",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.102
+ },
+ {
+  "id": "TC-CORE-015",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Unknown issuer is rejected",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.002
+ },
+ {
+  "id": "TC-CORE-016",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Expired credential is rejected",
+  "note": "",
+  "reqs": [
+   "FR-18"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-017",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Revoked credential is rejected",
+  "note": "",
+  "reqs": [
+   "FR-18"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-018",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "NIN is masked and full NIN is refused",
+  "note": "",
+  "reqs": [
+   "NFR-S4"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-019",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Garbage never raises and is rejected",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.054
+ },
+ {
+  "id": "TC-CORE-020",
+  "suite": "core",
+  "file": "core/tests/test_credential.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Any valid text round trips",
+  "note": "",
+  "reqs": [
+   "FR-03",
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.093
+ },
+ {
+  "id": "TC-CORE-021",
+  "suite": "core",
+  "file": "core/tests/test_qr.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "QR round trip",
+  "note": "",
+  "reqs": [
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-022",
+  "suite": "core",
+  "file": "core/tests/test_qr.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Credential with photo fits size budget",
+  "note": "",
+  "reqs": [
+   "NFR-C1",
+   "FR-02"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-023",
+  "suite": "core",
+  "file": "core/tests/test_qr.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Arbitrary text only raises invalid QR",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.037
+ },
+ {
+  "id": "TC-CORE-024",
+  "suite": "core",
+  "file": "core/tests/test_qr.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Decompression bomb is rejected",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.019
+ },
+ {
+  "id": "TC-CORE-025",
+  "suite": "core",
+  "file": "core/tests/test_qr.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Wrong prefix is rejected",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-030",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Genuine wallet response verifies",
+  "note": "",
+  "reqs": [
+   "FR-12",
+   "FR-17"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.002
+ },
+ {
+  "id": "TC-CORE-031",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Replayed response fails on new challenge",
+  "note": "",
+  "reqs": [
+   "FR-17",
+   "FR-23"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-032",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Response from another device fails",
+  "note": "",
+  "reqs": [
+   "FR-17",
+   "FR-23"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-033",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Response is bound to credential ID",
+  "note": "",
+  "reqs": [
+   "FR-17"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-034",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Challenges are unique 128-bit",
+  "note": "",
+  "reqs": [
+   "FR-17"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.002
+ },
+ {
+  "id": "TC-CORE-035",
+  "suite": "core",
+  "file": "core/tests/test_challenge.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Garbage response returns false",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 4,
+  "result": "Pass",
+  "time": 0.003
+ },
+ {
+  "id": "TC-CORE-040",
+  "suite": "core",
+  "file": "core/tests/test_revocation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Signed list verifies",
+  "note": "",
+  "reqs": [
+   "FR-09"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-041",
+  "suite": "core",
+  "file": "core/tests/test_revocation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "List with removed entry is rejected",
+  "note": "",
+  "reqs": [
+   "FR-09",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-042",
+  "suite": "core",
+  "file": "core/tests/test_revocation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "List from unknown key is rejected",
+  "note": "",
+  "reqs": [
+   "FR-09",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-050",
+  "suite": "core",
+  "file": "core/tests/test_audit.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Intact chain verifies",
+  "note": "",
+  "reqs": [
+   "FR-24",
+   "FR-25"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-051",
+  "suite": "core",
+  "file": "core/tests/test_audit.py",
+  "level": "Unit",
+  "technique": "Property-based (Hypothesis)",
+  "title": "Editing any record is detected",
+  "note": "",
+  "reqs": [
+   "FR-25",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.085
+ },
+ {
+  "id": "TC-CORE-052",
+  "suite": "core",
+  "file": "core/tests/test_audit.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Deleting a record is detected",
+  "note": "",
+  "reqs": [
+   "FR-25",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-CORE-053",
+  "suite": "core",
+  "file": "core/tests/test_audit.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Reordering is detected",
+  "note": "",
+  "reqs": [
+   "FR-25",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-CORE-060",
+  "suite": "core",
+  "file": "core/tests/test_keys_and_validation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Issuer key is encrypted at rest",
+  "note": "",
+  "reqs": [
+   "NFR-S1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.004
+ },
+ {
+  "id": "TC-CORE-061",
+  "suite": "core",
+  "file": "core/tests/test_keys_and_validation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Invalid payloads cannot be issued",
+  "note": "",
+  "reqs": [
+   "FR-03",
+   "FR-04",
+   "NFR-S5"
+  ],
+  "cases": 5,
+  "result": "Pass",
+  "time": 0.003
+ },
+ {
+  "id": "TC-CORE-062",
+  "suite": "core",
+  "file": "core/tests/test_keys_and_validation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Credential not yet valid is rejected",
+  "note": "",
+  "reqs": [
+   "FR-18"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-063",
+  "suite": "core",
+  "file": "core/tests/test_keys_and_validation.py",
+  "level": "Unit",
+  "technique": "Example-based",
+  "title": "Signed but structurally invalid payload is malformed",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-CORE-070",
+  "suite": "core",
+  "file": "core/tests/test_performance.py",
+  "level": "Unit (performance)",
+  "technique": "Measurement",
+  "title": "Offline verification is far inside three seconds",
+  "note": "",
+  "reqs": [
+   "NFR-P1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.073
+ },
+ {
+  "id": "TC-CORE-071",
+  "suite": "core",
+  "file": "core/tests/test_performance.py",
+  "level": "Unit (performance)",
+  "technique": "Measurement",
+  "title": "Revocation list of 100k fits in two megabytes",
+  "note": "First run failed: 2.40 MB as plain JSON. Fixed by compressing the list in transit (gzip)\nand in the verifier's cache (deflate). Both are measured here.",
+  "reqs": [
+   "NFR-C3",
+   "FR-09"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.258
+ },
+ {
+  "id": "TC-CORE-072",
+  "suite": "core",
+  "file": "core/tests/test_performance.py",
+  "level": "Unit (performance)",
+  "technique": "Measurement",
+  "title": "Signing throughput supports enrolment queues",
+  "note": "",
+  "reqs": [
+   "NFR-P1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.033
+ },
+ {
+  "id": "TC-SEC-001",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Injection in login is rejected cleanly",
+  "note": "",
+  "reqs": [
+   "NFR-S5",
+   "FR-27"
+  ],
+  "cases": 6,
+  "result": "Pass",
+  "time": 1.724
+ },
+ {
+  "id": "TC-SEC-002",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Injection in NIN is rejected by validation",
+  "note": "",
+  "reqs": [
+   "NFR-S5",
+   "FR-01"
+  ],
+  "cases": 8,
+  "result": "Pass",
+  "time": 4.367
+ },
+ {
+  "id": "TC-SEC-003",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Injection in audit filters returns no rows",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.553
+ },
+ {
+  "id": "TC-SEC-004",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Forged tokens are rejected",
+  "note": "",
+  "reqs": [
+   "FR-28",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.312
+ },
+ {
+  "id": "TC-SEC-005",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Expired token is rejected",
+  "note": "",
+  "reqs": [
+   "FR-28",
+   "FR-14"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.312
+ },
+ {
+  "id": "TC-SEC-006",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Agent cannot file records as someone else",
+  "note": "",
+  "reqs": [
+   "FR-24",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.543
+ },
+ {
+  "id": "TC-SEC-007",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Oversized inputs are refused",
+  "note": "",
+  "reqs": [
+   "NFR-C4",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.56
+ },
+ {
+  "id": "TC-SEC-008",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Security headers on every response",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.432
+ },
+ {
+  "id": "TC-SEC-009",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "CORS allows only the web app origin",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.304
+ },
+ {
+  "id": "TC-SEC-010",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "Errors never leak internals",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.532
+ },
+ {
+  "id": "TC-SEC-011",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "API docs page has a strict content security policy",
+  "note": "Found by the OWASP ZAP scan (rule 10038): the /docs pages had no CSP.",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.286
+ },
+ {
+  "id": "TC-SEC-012",
+  "suite": "services",
+  "file": "services/tests/test_security.py",
+  "level": "Security",
+  "technique": "DAST-style black-box",
+  "title": "API docs can be switched off for production",
+  "note": "",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.02
+ },
+ {
+  "id": "TC-SVC-001",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Every service reports healthy",
+  "note": "",
+  "reqs": [
+   "NFR-P3"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.309
+ },
+ {
+  "id": "TC-SVC-010",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Login returns EdDSA token with role",
+  "note": "",
+  "reqs": [
+   "FR-27"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.34
+ },
+ {
+  "id": "TC-SVC-011",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Agent token lasts seven days for offline use",
+  "note": "",
+  "reqs": [
+   "FR-14"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.375
+ },
+ {
+  "id": "TC-SVC-012",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Five failed logins lock account until admin unlocks",
+  "note": "",
+  "reqs": [
+   "NFR-S7",
+   "FR-29"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.825
+ },
+ {
+  "id": "TC-SVC-013",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Missing or forged token is rejected",
+  "note": "",
+  "reqs": [
+   "FR-28",
+   "NFR-S5"
+  ],
+  "cases": 3,
+  "result": "Pass",
+  "time": 1.03
+ },
+ {
+  "id": "TC-SVC-014",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Roles are enforced across services",
+  "note": "",
+  "reqs": [
+   "FR-28"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.575
+ },
+ {
+  "id": "TC-SVC-015",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Admin creates agent assigned to point",
+  "note": "",
+  "reqs": [
+   "FR-29"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.678
+ },
+ {
+  "id": "TC-SVC-016",
+  "suite": "services",
+  "file": "services/tests/test_auth.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Login endpoint is rate limited",
+  "note": "",
+  "reqs": [
+   "NFR-S7"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.353
+ },
+ {
+  "id": "TC-SVC-020",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Enrolment uses NIMC and stores only masked NIN",
+  "note": "",
+  "reqs": [
+   "FR-01",
+   "NFR-S4"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.56
+ },
+ {
+  "id": "TC-SVC-021",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Issued L2 credential verifies with published keys",
+  "note": "",
+  "reqs": [
+   "FR-03",
+   "FR-04",
+   "FR-08",
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.636
+ },
+ {
+  "id": "TC-SVC-022",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Paper wallet and key rules",
+  "note": "",
+  "reqs": [
+   "FR-05",
+   "FR-04"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.616
+ },
+ {
+  "id": "TC-SVC-023",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Reissue is atomic and revokes old credential",
+  "note": "",
+  "reqs": [
+   "FR-06",
+   "FR-09"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.599
+ },
+ {
+  "id": "TC-SVC-024",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Revoked credential fails offline verification after sync",
+  "note": "",
+  "reqs": [
+   "FR-07",
+   "FR-09",
+   "FR-18"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.575
+ },
+ {
+  "id": "TC-SVC-025",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Trust refuses forged rollback or unauthenticated lists",
+  "note": "",
+  "reqs": [
+   "FR-09",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.606
+ },
+ {
+  "id": "TC-SVC-026",
+  "suite": "services",
+  "file": "services/tests/test_issuer_trust.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Revocation survives trust outage and republishes",
+  "note": "",
+  "reqs": [
+   "FR-07",
+   "NFR-P3"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.588
+ },
+ {
+  "id": "TC-SVC-030",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Batch upload is chained and idempotent",
+  "note": "",
+  "reqs": [
+   "FR-24",
+   "FR-22"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.625
+ },
+ {
+  "id": "TC-SVC-031",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Tampering in the database is detected",
+  "note": "",
+  "reqs": [
+   "FR-25",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.552
+ },
+ {
+  "id": "TC-SVC-032",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Auditor filters records",
+  "note": "",
+  "reqs": [
+   "FR-25"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.54
+ },
+ {
+  "id": "TC-SVC-033",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Same credential at two points within 24h is flagged",
+  "note": "",
+  "reqs": [
+   "FR-26"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.587
+ },
+ {
+  "id": "TC-SVC-040",
+  "suite": "services",
+  "file": "services/tests/test_performance_capacity.py",
+  "level": "Integration (performance)",
+  "technique": "Measurement",
+  "title": "Issuance completes within five seconds",
+  "note": "",
+  "reqs": [
+   "NFR-P2",
+   "FR-03"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.554
+ },
+ {
+  "id": "TC-SVC-041",
+  "suite": "services",
+  "file": "services/tests/test_performance_capacity.py",
+  "level": "Integration (performance)",
+  "technique": "Measurement",
+  "title": "A full day of 2000 records uploads in one batch",
+  "note": "",
+  "reqs": [
+   "NFR-C4",
+   "FR-24"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 1.398
+ },
+ {
+  "id": "TC-SVC-042",
+  "suite": "services",
+  "file": "services/tests/test_performance_capacity.py",
+  "level": "Integration (performance)",
+  "technique": "Measurement",
+  "title": "Large revocation list is served compressed",
+  "note": "",
+  "reqs": [
+   "NFR-C3",
+   "FR-15"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.402
+ },
+ {
+  "id": "TC-SYS-001",
+  "suite": "services",
+  "file": "services/tests/test_system_e2e.py",
+  "level": "System (API)",
+  "technique": "End-to-end scenario",
+  "title": "Distribution day end to end",
+  "note": "",
+  "reqs": [
+   "FR-01",
+   "FR-03",
+   "FR-04",
+   "FR-07",
+   "FR-15",
+   "FR-16",
+   "FR-17",
+   "FR-18",
+   "FR-22",
+   "FR-24",
+   "FR-25"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.564
+ },
+ {
+  "id": "TC-WEB-001",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Base45 RFC 9285 vector",
+  "reqs": [
+   "NFR-C1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-WEB-002",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Accepts a Python-issued L2 credential offline",
+  "reqs": [
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.044
+ },
+ {
+  "id": "TC-WEB-003",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Rejects a tampered credential",
+  "reqs": [
+   "FR-16",
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.004
+ },
+ {
+  "id": "TC-WEB-004",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Rejects revoked and expired credentials",
+  "reqs": [
+   "FR-18"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.008
+ },
+ {
+  "id": "TC-WEB-005",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Unknown issuer and garbage QR fail securely",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.001
+ },
+ {
+  "id": "TC-WEB-006",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Browser signs the same challenge response as Python (deterministic Ed25519)",
+  "reqs": [
+   "FR-12",
+   "FR-17"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.007
+ },
+ {
+  "id": "TC-WEB-007",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "A different device key cannot answer the challenge",
+  "reqs": [
+   "FR-23"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.007
+ },
+ {
+  "id": "TC-WEB-008",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Verifies the Python-signed revocation list and rejects a forged one",
+  "reqs": [
+   "FR-09",
+   "FR-15"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.003
+ },
+ {
+  "id": "TC-WEB-009",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Device-to-device QR formats round-trip",
+  "reqs": [
+   "FR-17"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-WEB-010",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Keeps a meaningful trailing space but drops line breaks",
+  "reqs": [
+   "NFR-S5"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-WEB-011",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Recognises each device-to-device code type",
+  "reqs": [
+   "NFR-U2"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
+ },
+ {
+  "id": "TC-WEB-012",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Every vector still verifies after cleaning",
+  "reqs": [
+   "FR-16"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.006
+ },
+ {
+  "id": "TC-WEB-013",
+  "suite": "web",
+  "file": "tests/perf_vault.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "100 full offline checks run far inside the 3 s budget",
+  "reqs": [
+   "NFR-P1"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.43
+ },
+ {
+  "id": "TC-WEB-014",
+  "suite": "web",
+  "file": "tests/perf_vault.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Device key is sealed by the PIN; a wrong PIN cannot open it",
+  "reqs": [
+   "NFR-S2",
+   "FR-11"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.107
+ },
+ {
+  "id": "TC-WEB-015",
+  "suite": "web",
+  "file": "tests/perf_vault.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "Five wallet profiles with credentials fit easily in 5 MB",
+  "reqs": [
+   "NFR-C2",
+   "FR-10"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.179
+ },
+ {
+  "id": "TC-WEB-016",
+  "suite": "web",
+  "file": "tests/perf_vault.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "100,000 revoked IDs are stored in well under 2 MB and round-trip exactly",
+  "reqs": [
+   "NFR-C3"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 1.059
+ },
+ {
+  "id": "TC-SYS-002",
+  "suite": "e2e",
+  "file": "web/e2e",
+  "level": "System (browser)",
+  "technique": "Playwright scenario",
+  "title": "Distribution day across three browser devices (officer, farmer, agent)",
+  "reqs": [
+   "FR-04",
+   "FR-10",
+   "FR-11",
+   "FR-12",
+   "FR-13",
+   "FR-15",
+   "FR-16",
+   "FR-17",
+   "FR-19",
+   "FR-20",
+   "FR-22",
+   "FR-23",
+   "FR-24",
+   "FR-25",
+   "NFR-P3",
+   "NFR-U2"
+  ],
+  "cases": 11,
+  "result": "Pass",
+  "time": null
+ },
+ {
+  "id": "TC-SYS-003",
+  "suite": "e2e",
+  "file": "web/e2e",
+  "level": "System (browser)",
+  "technique": "Playwright scenario",
+  "title": "Guided demo click-through, 16 steps against live services",
+  "reqs": [
+   "FR-01",
+   "FR-03",
+   "FR-06",
+   "FR-07",
+   "FR-09",
+   "FR-14",
+   "FR-15",
+   "FR-16",
+   "FR-17",
+   "FR-18",
+   "FR-24",
+   "FR-25"
+  ],
+  "cases": 16,
+  "result": "Pass",
+  "time": null
+ }
+]

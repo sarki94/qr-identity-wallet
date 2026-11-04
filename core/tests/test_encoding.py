@@ -33,6 +33,7 @@ def test_tc_core_004_invalid_base45_raises_value_error(bad):
         b45decode(bad)
 
 
+@pytest.mark.req("NFR-C1")
 @given(st.binary(max_size=256))
 def test_tc_core_005_base64url_round_trip_property(data):
     text = b64url_encode(data)

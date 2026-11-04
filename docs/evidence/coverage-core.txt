@@ -1,0 +1,15 @@
+_______________ coverage: platform linux, python 3.13.16-final-0 _______________
+
+Name                     Stmts   Miss  Cover
+--------------------------------------------
+qrw_core/__init__.py         1      0   100%
+qrw_core/audit.py           20      0   100%
+qrw_core/challenge.py       20      0   100%
+qrw_core/credential.py     125      2    98%
+qrw_core/encoding.py        42      0   100%
+qrw_core/keys.py            20      1    95%
+qrw_core/qr.py              23      3    87%
+qrw_core/revocation.py      39      3    92%
+--------------------------------------------
+TOTAL                      290      9    97%
+53 passed in 1.74s

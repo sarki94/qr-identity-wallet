@@ -86,7 +86,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=moderate
       - name: Type-check (TypeScript strict)
         run: npx tsc --noEmit
-      - name: Cross-language tests (Python-issued vectors verified in the browser library)
-        run: npx vitest run
+      - name: Cross-language tests (Python-issued vectors verified in the browser library) with coverage
+        run: npm run coverage
       - name: Production build (PWA)
         run: npm run build
