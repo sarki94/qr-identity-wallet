@@ -1,30 +1,263 @@
+// Technical Report QRW-TR-07: a software project technical report (not a thesis).
+// Layout: report title page with details and abstract; contents; continuous numbered sections;
+// findings in tables; issues, open items and recommendations; appendices.
 const { Doc } = require("./lib");
 const UML = process.env.UML_PNG;
 
-const doc = new Doc({ code: "QRW-TR-07", title: "Technical Report", version: "1.0", date: "November 2026",
-  related: "QRW-SRS-01 · QRW-SDD-02 · QRW-SEC-03 · QRW-TST-04 · QRW-PRM-05 · QRW-USR-06" });
+const doc = new Doc({
+  code: "QRW-TR-07", title: "Technical Report", version: "1.1", date: "6 November 2026", layout: "report", continuous: true,
+  reportTitle: "Offline-First Cryptographic QR Identity Wallet for Rural Public Services",
+  reportSubtitle: "Technical report on the engineering of the solution to COEN838 Question 4",
+  details: [
+    ["Report number", "QRW-TR-07, version 1.1"],
+    ["Date", "6 November 2026"],
+    ["Prepared by", "Aliyu Sarki Iliyasu (P25EGCP8040)"],
+    ["Course", "COEN838 Advanced Software Engineering, project examination, Question 4"],
+    ["Institution", "Department of Computer Engineering, Ahmadu Bello University, Zaria"],
+    ["Source code", "https://github.com/sarki94/qr-identity-wallet"],
+    ["Companion documents", "QRW-SRS-01, QRW-SDD-02, QRW-SEC-03, QRW-TST-04, QRW-PRM-05, QRW-USR-06"],
+    ["Status", "Final for submission"],
+  ],
+  abstract: "Rural citizens in Nigeria are often refused public services because online NIN verification fails where there is no network. This report describes the engineering of an offline-first cryptographic QR identity wallet, applied to the collection of subsidised fertiliser in Kura LGA, Kano State. A farmer receives an Ed25519-signed credential held in a phone wallet or printed on paper; the agent's phone verifies it with no network by checking the signature, a challenge–response that proves the wallet is not a copy, a cached signed revocation list and a face check, and later uploads each record to a hash-chained audit log. The prototype (core library, five services, one progressive web app) meets 43 of 48 requirements in full and 5 in part; 94 automated test cases pass; and the final security scan has no high- or medium-risk finding. The report states the assumptions made, the process followed, the results, the issues met and the work that remains.",
+  keywords: "offline-first, digital identity, Ed25519, QR code, revocation, STRIDE, test-driven development",
+});
 
 // =====================================================================
-doc.h1("Introduction");
-doc.h2("Summary");
-doc.p("Rural citizens in Nigeria are often turned away from public services because online NIN verification fails where there is no network. This report describes how a solution to that problem was engineered for COEN838 Question 4: an offline-first cryptographic QR identity wallet, applied to the collection of subsidised fertiliser in Kura Local Government Area, Kano State.");
-doc.p("The system issues each farmer a digitally signed credential at the LGA office, carried as a QR code in a wallet app on the farmer's phone or printed on paper. At the distribution point the agent's phone verifies it with no network: it checks the issuer's Ed25519 signature, asks the wallet to sign a fresh challenge to prove it is not a copy, checks revocation and expiry against a cached signed list, and asks the agent to compare the farmer's face. Every check is queued and later uploaded to a hash-chained audit log. The prototype consists of a cryptographic core library, five services and one progressive web app. It meets 43 of its 48 requirements in full and 5 in part; 94 automated test cases (145 checks) pass; and the dynamic security scan ends with no high- or medium-risk finding.");
-doc.h2("Purpose and Structure of This Report");
-doc.p("The examination asks for a technical report describing the engineering process followed (Instruction B) and stating every assumption made in interpreting the problem (Instruction D), and requires responsible and ethical use of AI (Instruction F). Section 2 states the assumptions. Section 3 describes the engineering process, phase by phase, and Section 4 the results. Section 5 discusses the design and what was learned, and Section 6 the limitations and future work. Section 7 covers ethical, legal and social considerations, and Section 8 is the statement on the use of AI. The detailed artefacts are in the six companion documents listed in Table " + doc.peekTable() + ".");
-doc.table("Submission documents", ["Code", "Document", "Main content"], [
-  ["QRW-SRS-01", "Software Requirements Specification", "Elicitation, FR/NFR, UML models, formal specification, RTM"],
-  ["QRW-SDD-02", "Software Design Document", "Architectural style, components, ERD, communication patterns, scalability"],
-  ["QRW-SEC-03", "Security Engineering Report", "STRIDE threat model, principles, authentication, security testing"],
-  ["QRW-TST-04", "Test Plan and Test Report", "Strategy, test cases, results, coverage, defects"],
-  ["QRW-PRM-05", "Project, Risk and Maintenance Plan", "Process, earned value, risk register, maintenance plan"],
-  ["QRW-USR-06", "User Manual and Installation Guide", "Installation, user guide by role, troubleshooting"],
-  ["QRW-TR-07", "Technical Report (this document)", "Process, assumptions, results, AI-use statement"],
-], [16, 34, 50]);
-doc.p("The source code, build instructions, UML sources, test evidence and the generators for all seven documents are in the GitHub repository https://github.com/sarki94/qr-identity-wallet.");
-doc.h2("References");
+doc.h1("Executive Summary");
+doc.p("The task was to engineer, with the methods of Modules I to V, a working solution to the problem that online identity checks fail in rural Nigeria. The delivered system moves the trust decision from the server to the agent's phone: credentials are signed once, online, at the LGA office, and verified anywhere, offline, in milliseconds. Revocation and audit synchronise whenever a signal is available. Table " + doc.peekTable() + " gives the outcome at a glance.");
+doc.table("Outcome at a glance", ["Area", "Outcome"], [
+  ["Working software", "Core library, five services and a progressive web app; runs on one laptop with one launcher, or on phones over HTTPS"],
+  ["Requirements", "48 requirements: 43 implemented, 5 partial; all traced to tests or manual verification"],
+  ["Testing", "94 test cases, 145 checks, all passing; coverage 97% (core), 97% (services)"],
+  ["Security", "19 STRIDE threats mitigated; OWASP ZAP: 0 High, 0 Medium after fix; no open static-analysis or dependency findings"],
+  ["Schedule", "Schedule performance index 0.95 on 4 November after recovering from 0.25"],
+  ["Open items", "Field test on a real phone; five partial requirements (Section 9)"],
+], [22, 78]);
+
+// =====================================================================
+doc.h1("Project Overview");
+doc.h2("Problem Statement");
+doc.p("The examination states the problem as follows: *\"Rural citizens in Nigeria often cannot access public services (e.g., local clinics, agricultural subsidies) because online NIN/BVN verification fails due to poor network connectivity.\"*");
+doc.h2("Objectives");
+doc.table("Project objectives and status", ["ID", "Objective", "Status"], [
+  ["O1", "Verify a citizen's identity at the point of service with no network", "Met"],
+  ["O2", "Prevent forged, altered and copied credentials from being accepted", "Met"],
+  ["O3", "Allow credentials to be withdrawn, reaching offline points as soon as they sync", "Met, with a bounded delay"],
+  ["O4", "Keep a tamper-evident record of every verification", "Met"],
+  ["O5", "Include citizens with shared phones or no smartphone", "Met"],
+  ["O6", "Protect personal data in line with the Nigeria Data Protection Act 2023", "Met in design; procedures for rollout"],
+  ["O7", "Produce the artefacts and evidence required by the examination", "Met"],
+], [8, 66, 26]);
+doc.h2("Scope");
+doc.table("Scope", ["In scope", "Out of scope"], [
+  ["Enrolment against NIN (mock NIMC) and credential issuance", "Entitlement: quantities and whether a farmer has already collected (Question 3)"],
+  ["Smartphone wallet (L2) and paper wallet (L1)", "BVN or any banking data"],
+  ["Offline verification, revocation, synchronisation and audit", "Biometric matching by software"],
+  ["Staff authentication and role-based access", "Native app-store apps; real NIMC integration"],
+], [50, 50]);
+doc.h2("Deliverables");
+doc.table("Deliverables", ["Item", "Where"], [
+  ["Running source code and build instructions", "GitHub repository; README; QRW-USR-06"],
+  ["Software Requirements Specification with UML and RTM", "QRW-SRS-01"],
+  ["Design documentation (architecture, ERD, communication, scalability)", "QRW-SDD-02"],
+  ["Threat model, secure design and security testing", "QRW-SEC-03"],
+  ["Test strategy, test cases and results", "QRW-TST-04"],
+  ["Risk register, maintenance plan and delivery metrics", "QRW-PRM-05"],
+  ["User manual and installation guide", "QRW-USR-06"],
+  ["Technical report (this document)", "QRW-TR-07"],
+], [62, 38]);
+
+// =====================================================================
+doc.h1("Assumptions");
+doc.p("Instruction D of the examination requires every assumption made in interpreting the problem to be stated. Table " + doc.peekTable() + " gives the interpretation of the problem; Table " + doc.section + "." + ((doc.tableNo[doc.section] || 0) + 2) + " gives the operating assumptions the design relies on.");
+doc.table("Assumptions in interpreting the problem", ["ID", "Assumption", "Reason"], [
+  ["IA1", "\"Rural public services\" is addressed through one concrete service, the collection of subsidised fertiliser; clinic attendance is a secondary case using the same mechanism.", "Both are named in the problem; a concrete case gives testable requirements and matches the author's own observation."],
+  ["IA2", "\"Offline-first\" applies to verification at the point of service. Enrolment and issuance happen online at an LGA office.", "Issuance needs NIMC and must protect the signing key, which is unsafe on a field device."],
+  ["IA3", "The credential proves identity only, not entitlement.", "Entitlement is the subject of Question 3; separation keeps the identity layer reusable."],
+  ["IA4", "BVN is not used.", "Identity is anchored on the NIN; banking data in a QR seen by every agent breaches data minimisation."],
+  ["IA5", "\"Wallet\" means a holder-controlled phone app; a printed paper wallet extends it to farmers without smartphones.", "The problem names a wallet; elicitation found shared and feature phones common."],
+  ["IA6", "A progressive web app is acceptable as the app.", "It works offline, installs to the home screen and uses the camera without app-store distribution."],
+  ["IA7", "Fictional NIMC records and demonstration accounts are acceptable for an examination prototype.", "Real NIMC access is licensed; no real personal data was used."],
+], [8, 50, 42]);
+doc.table("Operating assumptions", ["ID", "Assumption", "Consequence if false"], [
+  ["AS1", "NIMC is represented by a mock service; production integration requires NIMC licensing.", "The Issuer calls the real interface; credentials and verifiers are unchanged."],
+  ["AS2", "The issuer key is an encrypted file in the prototype; production uses a hardware security module.", "Higher key-compromise risk (PD-2)."],
+  ["AS3", "L2 holders have an Android phone (own or shared) with a camera; others use the L1 paper wallet.", "More L1 use, lower assurance."],
+  ["AS4", "Agents are given an Android smartphone by the programme.", "Verification cannot run at that point."],
+  ["AS5", "Distribution points get at least intermittent connectivity within seven days.", "Revocations arrive later; the 30-day refusal applies."],
+  ["AS6", "Entitlement is managed by a separate programme system.", "Scope would extend into Question 3."],
+  ["AS7", "Proxy collection is prohibited by programme policy, as observed in Kura.", "A delegation feature would be needed."],
+  ["AS8", "Enrolment takes place at an office with connectivity.", "Offline issuance would need a different key-protection design."],
+], [8, 54, 38]);
+
+// =====================================================================
+doc.h1("Engineering Approach");
+doc.h2("Development Methodology");
+doc.p("An iterative, Agile-style process was used, adapted to a solo developer and a fixed deadline: requirements and models first, then daily increments that each ended in a tested build, with a written sprint plan, an agreed scope cut list, daily earned-value tracking and a decision log. The security-critical core was built test-first. Waterfall was rejected because problems with how the browser and the server agree on signatures had to surface on the day they appeared, not at the end.");
+doc.h2("Phases and Timeline");
+doc.table("Phases and timeline", ["Date", "Phase", "Output"], [
+  ["22 Oct 2026", "Inception", "Question chosen (D1); course formats collected from the lecture notes; service split (D3)"],
+  ["25 Oct 2026", "Requirements and modelling", "Elicitation localised to Kura LGA; two assurance levels (D2a); UML models"],
+  ["30 Oct 2026", "Design and core", "Credential format (D9); test strategy (D10); core library test-first; CI"],
+  ["3 Nov 2026", "Construction", "Five services; web app; security tests; generated RTM; repository on GitHub, CI green"],
+  ["4 Nov 2026", "Verification and documentation", "OWASP ZAP scan and fix; coverage; SRS, design, security, test, project and user documents"],
+  ["5–7 Nov 2026", "Transition", "Phone test, review, slides and rehearsal"],
+], [16, 26, 58]);
+doc.h2("Standards and Conventions Followed");
+doc.table("Standards and conventions", ["Area", "Standard or convention"], [
+  ["Requirements", "Lecturer's six-section SRS; FR/NFR classification; MoSCoW; four-column RTM"],
+  ["Design", "IEEE 1016 viewpoints; UML 2 (use case, sequence, class, state machine)"],
+  ["Security", "STRIDE in the lecturer's four-column format; OWASP Top 10; NDPA 2023"],
+  ["Testing", "IEEE 829 test plan and summary report; test IDs tagged with requirement IDs"],
+  ["Cryptography and encoding", "RFC 8032 (Ed25519), RFC 9285 (Base45), RFC 7914 (scrypt), RFC 8018 (PBKDF2)"],
+  ["Code and documents", "PEP 8 (Flake8); TypeScript strict mode; Git with descriptive commits; department writing style"],
+], [24, 76]);
+doc.h2("Toolchain");
+doc.table("Tools used", ["Purpose", "Tools"], [
+  ["Modelling", "PlantUML (sources in the repository)"],
+  ["Implementation", "Python, FastAPI, SQLAlchemy, cryptography, PyJWT; React, TypeScript, Vite, @noble/ed25519"],
+  ["Testing", "pytest, Hypothesis, Vitest, Playwright"],
+  ["Quality and security", "Flake8, Bandit, pip-audit, npm audit, OWASP ZAP"],
+  ["Build, CI and delivery", "Git, GitHub, GitHub Actions, Docker Compose"],
+  ["Documentation", "Scripts that generate the RTM, test catalogue, charts and all seven Word documents from the repository"],
+], [24, 76]);
+
+// =====================================================================
+doc.h1("Solution Delivered");
+doc.h2("System Overview");
+doc.p(`Figure ${doc.peekFig()} shows the components. The Issuer is the only holder of the signing key; Trust publishes keys and the signed revocation list; Audit collects records into a hash chain; Auth issues staff tokens. Wallet and Verifier talk to each other only through QR codes, with no network.`);
+doc.figure("Components of the delivered system", `${UML}/AR1.png`, 15.5);
+doc.h2("Key Technical Decisions");
+doc.table("Key technical decisions", ["ID", "Decision", "Rationale"], [
+  ["D2a", "Two assurance levels on one credential format: L2 phone wallet, L1 paper wallet", "Shared and feature phones are common (elicitation)"],
+  ["D3", "Services split on trust boundaries: Auth, Issuer, Trust, Audit, mock NIMC", "Signing key isolated in one service"],
+  ["D6", "No proxy presentation", "Programme policy observed in Kura"],
+  ["D8", "Atomic re-issue in one transaction", "Never two active credentials, nor none"],
+  ["D9", "Sign exact payload bytes; QR = \"QRW1:\" + Base45(zlib(signature ‖ payload))", "No cross-language mismatch; compact QR"],
+  ["D11", "Issuer signs the revocation list; Trust only verifies and publishes it", "Trust cannot forge or roll back a list"],
+  ["D12", "Database per service; EdDSA staff tokens verified with Auth's public key", "Services check tokens but cannot mint them"],
+  ["D13", "NIN stored as a keyed hash plus masked copy", "A stolen database reveals no NIN"],
+  ["D14", "Strict RFC 8032 in the browser; one HTTPS origin for phones", "Browser and server accept the same signatures"],
+], [8, 52, 40]);
+doc.h2("Code Base");
+doc.table("Code base summary", ["Part", "Technology", "Content"], [
+  ["qrw_core", "Python", "Signing, verification, QR format, challenge–response, revocation list, hash chain"],
+  ["Services", "FastAPI, SQLite / PostgreSQL", "Auth, Issuer, Trust and Revocation, Audit and Sync, mock NIMC; Docker image"],
+  ["Web app", "React, TypeScript", "Wallet, Verifier, Issuer Portal, Audit, Guided Demo; works offline"],
+  ["Size and history", "", "About 2,400 lines of production code; version history from 30 October 2026 with test-first commits"],
+], [16, 26, 58]);
+
+// =====================================================================
+doc.h1("Engineering Work by Rubric Area");
+doc.p("Table " + doc.peekTable() + " summarises what was done in each area of the marking rubric and where the evidence is.");
+doc.table("Work performed and evidence", ["Area", "Work performed", "Evidence"], [
+  ["Requirements and traceability (Module I)", "Ethnographic elicitation (non-participant observation in Kura LGA, 2024 wet season) triangulated with published sources; 29 FR and 19 NFR with MoSCoW priorities; use-case, sequence, class and state models; RTM generated from test tags", "QRW-SRS-01, Appendix A"],
+  ["Architecture and design (Module III)", "Offline-first edge verification with a service-oriented back end; four styles compared; ERD with database per service; synchronous, asynchronous and offline patterns justified; scalability and failure modes analysed", "QRW-SDD-02"],
+  ["Security engineering (Module IV)", "STRIDE on six trust boundaries (19 threats); least privilege, defence in depth, fail securely; offline holder authentication and staff RBAC; SAST, dependency scans, security tests, OWASP ZAP", "QRW-SEC-03"],
+  ["Implementation", "Working core, services and web app; one-click launcher; Docker; phone mode over HTTPS", "Repository; QRW-USR-06"],
+  ["Testing and QA (Module II)", "TDD with red–green commits; property-based, cross-implementation, integration, security and browser system tests; CI with coverage gates", "QRW-TST-04"],
+  ["Project and risk management (Module V)", "Sprint plan and cut list; earned value; burndown; technical debt ratio; risk register (RE = P × L); maintenance plan by class", "QRW-PRM-05"],
+], [22, 58, 20]);
+
+// =====================================================================
+doc.h1("Verification and Results");
+doc.h2("Requirements Status");
+doc.p("43 requirements are implemented in full. Table " + doc.peekTable() + " lists the five that are partial and what is missing.");
+doc.table("Partially met requirements", ["Requirement", "Missing part"], [
+  ["FR-14", "Agent PIN unlock of the seven-day offline token"],
+  ["FR-27", "Multi-factor authentication for staff (cut from the schedule)"],
+  ["NFR-S3", "TLS between services (prototype runs them on one host)"],
+  ["NFR-S8", "Organisational procedures: recorded consent, impact assessment"],
+  ["NFR-U1", "Full Hausa interface (verdicts only are in Hausa)"],
+], [20, 80]);
+doc.h2("Test Results");
+doc.table("Test results", ["Measure", "Result"], [
+  ["Automated test cases / checks", "94 / 145, all passing"],
+  ["Browser system tests", "TC-SYS-002 11/11; TC-SYS-003 16/16 (re-run 4 November)"],
+  ["Statement coverage", "Core 97%; services 97%; browser verifier 90%; PIN vault 100%"],
+  ["Defects found / open", "7 / 0"],
+], [40, 60]);
+doc.h2("Non-Functional Targets");
+doc.table("Measured against targets", ["Requirement", "Target", "Measured"], [
+  ["NFR-P1 offline verification", "≤ 3 s", "0.32 ms (Python); 4.3 ms (browser library)"],
+  ["NFR-P2 issuance", "≤ 5 s", "8 ms"],
+  ["NFR-C3 100,000-entry revocation list", "≤ 2 MB", "0.94 MB in transit; 1.41 MB on the phone"],
+  ["NFR-C2 five wallet profiles", "≤ 5 MB", "3.4 KB"],
+  ["NFR-C4 daily records upload", "2,000 in one request", "Accepted; chain intact"],
+], [36, 22, 42]);
+doc.h2("Security Results");
+doc.table("Security results", ["Check", "Result"], [
+  ["Bandit (SAST)", "0 open; one false positive triaged, one finding fixed"],
+  ["pip-audit / npm audit", "0 known vulnerabilities in shipped packages"],
+  ["Security test cases", "24 checks (TC-SEC-001 to 012), all passing"],
+  ["OWASP ZAP (authenticated, full active scan)", "Before: 1 Medium. After fix: 0 High, 0 Medium, 1 Low accepted"],
+], [40, 60]);
+doc.h2("Demonstration Readiness");
+doc.p("The Guided Demo runs the whole distribution day on one laptop against the live services and was run end to end by the candidate on his own Windows laptop. The same application runs on Android phones over HTTPS on a local network for a field-style demonstration.");
+
+// =====================================================================
+doc.h1("Issues and Resolutions");
+doc.p("Table " + doc.peekTable() + " records the significant issues met during the project and how each was resolved.");
+doc.table("Issues log", ["ID", "Issue", "Impact", "Resolution"], [
+  ["IS-1", "Three planned days with no sprint work (SPI 0.25 on 2 Nov)", "Deadline risk", "Re-plan, work pulled forward, cut list applied; SPI 0.95 on 4 Nov"],
+  ["IS-2", "Python packages would not install on the candidate's Windows laptop", "Setup blocked", "Corrected install paths and a fallback; README and manual updated"],
+  ["IS-3", "Services not running during manual testing gave confusing errors", "Demo risk", "One-click launcher and the Guided Demo"],
+  ["IS-4", "Valid QR codes rejected because the scanner trimmed meaningful spaces (DEF-01)", "Genuine farmers refused", "Fixed; clearer messages per code type; regression tests"],
+  ["IS-5", "100,000-entry revocation list 2.40 MB, over budget (DEF-02)", "Capacity target missed", "Compression in transit and on the phone"],
+  ["IS-6", "Advisories in a web routing dependency (DEF-03)", "Security", "Dependency removed; internal router"],
+  ["IS-7", "No Content-Security-Policy on API documentation pages (DEF-04, DEF-05)", "Security", "Fixed test-first; documentation switch for production"],
+  ["IS-8", "Navigation tabs overflowed on phone screens", "Usability", "Layout fixed; system tests re-run"],
+  ["IS-9", "Git file-lock prompts on Windows", "Workflow friction", "Answer \"n\"; disable automatic housekeeping"],
+], [9, 36, 17, 38], { size: 18 });
+
+// =====================================================================
+doc.h1("Known Limitations and Open Items");
+doc.table("Limitations and open items", ["Item", "Impact", "Plan"], [
+  ["Field test on a real Android phone", "Performance and camera use not yet confirmed on target hardware", "Before the defence (npm run phone)"],
+  ["Five partial requirements (Section 7.1)", "Lower staff assurance; Hausa limited to verdicts", "Maintenance plan, QRW-PRM-05"],
+  ["Mock NIMC, SQLite, file-based signing key", "Not production-grade", "NIMC integration, PostgreSQL, HSM"],
+  ["Revocation reaches offline points only on sync", "Revoked credential may pass for up to 30 days", "Delta lists over SMS or USSD"],
+  ["Browser system tests run by hand, not in CI", "Regressions in screens found later", "Add to CI"],
+  ["Elicitation by one observer; no usability test with users", "Usability claims rest on inspection", "Think-aloud evaluation in a pilot"],
+], [32, 36, 32]);
+
+// =====================================================================
+doc.h1("Recommendations");
+doc.numbered([
+  "Run a field pilot at one distribution point in Kura LGA with a think-aloud usability evaluation of the Verifier.",
+  "Before any pilot, add staff multi-factor authentication and the full Hausa interface.",
+  "For production, integrate the real NIMC interface, move to PostgreSQL, hold the issuer key in a hardware security module and enable mutual TLS between services.",
+  "Carry out a data protection impact assessment and define the consent procedure for enrolment.",
+  "Introduce delta revocation lists to shorten the revocation delay at offline points.",
+  "Add the browser system tests and the ZAP scan to continuous integration.",
+]);
+
+// =====================================================================
+doc.h1("Compliance and Ethical Considerations");
+doc.bullets([
+  "**Data protection.** The credential carries a masked NIN only, with no BVN, telephone number or date of birth; the full NIN is never stored; audit records hold identifiers, not personal details.",
+  "**Inclusion.** Paper wallets for farmers without smartphones; separate PIN-protected profiles on shared phones; Hausa verdicts with colour and icons.",
+  "**Human oversight.** The face check is made by a person, not by software, so no biometric model decides who is served; every rejection is recorded with its reason for review.",
+  "**Honest evidence.** No field data was invented; personas are labelled illustrative; test data is fictional; every figure in this report is produced by a test or scan in the repository.",
+]);
+
+// =====================================================================
+doc.h1("Statement on the Use of AI");
+doc.p("Instruction F requires responsible and ethical use of AI. This section states how AI was used, what the candidate did, and how the work was checked.");
+doc.table("Use of AI in the project", ["Aspect", "Statement"], [
+  ["Tool", "Claude, an AI assistant by Anthropic, used as a working collaborator in sessions directed by the candidate. AI-assisted commits carry a Co-Authored-By trailer."],
+  ["What the AI did", "Discussed and critiqued options (question choice, architecture, security, testing); drafted the elicitation write-up from the candidate's account; wrote most of the code, tests, UML drafts and document drafts; ran the tests and scans and fixed defects found; prepared setup guides."],
+  ["What the candidate did", "Chose the question and case study; supplied the field observation from Kura LGA; made or approved every decision in the decision log; gathered the lecturer's formats from the course materials; set up and tested the system on his own laptop and surfaced defect DEF-01; reviewed the documents; owns the submission and its defence."],
+  ["Safeguards", "Code accepted only when it passed tests, coverage gates and scans in CI; no invented observations, users or measurements; AI use declared here and in the version history; design choices explained to the candidate so that he can defend them."],
+], [22, 78]);
+
+// =====================================================================
+doc.h1("References");
 doc.references([
   "African Farming. (2026). *Katsina launches fertiliser scheme to strengthen 2026 farming season*. https://africanfarming.net/crops/agriculture/katsina-launches-fertiliser-scheme-to-strengthen-2026-farming-season",
   "Fältström, P., Ljunggren, F., & van Gulik, D.-W. (2022). *The Base45 data encoding* (RFC 9285). Internet Engineering Task Force. https://doi.org/10.17487/RFC9285",
+  "IEEE. (2008). *IEEE standard for software and system test documentation* (IEEE Std 829-2008). Institute of Electrical and Electronics Engineers.",
+  "IEEE. (2009). *IEEE standard for information technology — Systems design — Software design descriptions* (IEEE Std 1016-2009). Institute of Electrical and Electronics Engineers.",
   "Josefsson, S., & Liusvaara, I. (2017). *Edwards-curve digital signature algorithm (EdDSA)* (RFC 8032). Internet Engineering Task Force. https://doi.org/10.17487/RFC8032",
   "Nigeria Data Protection Commission. (2023). *Nigeria Data Protection Act, 2023*. Federal Republic of Nigeria.",
   "Nwaobiala, C. U., & Ubor, V. U. (2019). Effectiveness of electronic wallet system of Growth Enhancement Support Scheme distribution among arable crop farmers in Imo State, South-Eastern Nigeria. *Scientific Papers Series Management, Economic Engineering in Agriculture and Rural Development, 16*(1).",
@@ -32,155 +265,27 @@ doc.references([
 ]);
 
 // =====================================================================
-doc.h1("Assumptions");
-doc.p("Instruction D requires every assumption made in interpreting the problem to be stated. They fall into two groups: how the problem statement was interpreted (Table " + doc.peekTable() + "), and the operating assumptions the design depends on (Table " + doc.section + "." + ((doc.tableNo[doc.section] || 0) + 2) + ", also in QRW-SRS-01 Section 2).");
-doc.table("Assumptions in interpreting the problem", ["ID", "Assumption", "Reason"], [
-  ["IA1", "\"Rural public services\" is interpreted through one concrete service, the collection of subsidised fertiliser, with clinic attendance as a secondary use case that uses the same mechanism.", "The problem statement names both; a concrete case was needed for real requirements, and it matches the author's own observation."],
-  ["IA2", "\"Offline-first\" means that verification at the point of service works with no network. Enrolment and issuance happen online at an LGA office.", "Issuance must consult NIMC and protect the signing key, which cannot be done safely on a field device."],
-  ["IA3", "The credential proves identity only (who the farmer is), not entitlement (how much fertiliser, whether already collected).", "Entitlement and distribution are the subject of Question 3; keeping them separate keeps the identity layer reusable for clinics."],
-  ["IA4", "BVN is not used and is not placed in the credential.", "Identity is anchored on the NIN; adding banking data to a QR seen by every agent would breach data minimisation."],
-  ["IA5", "\"Wallet\" means a holder-controlled app on a phone; a printed paper wallet is an extension for farmers without a smartphone.", "The question names a wallet; the elicitation found feature phones and shared phones common."],
-  ["IA6", "A progressive web app is acceptable as the \"app\".", "It runs offline, installs to the home screen and uses the camera, without app-store distribution."],
-  ["IA7", "Mock NIMC data and demonstration accounts are acceptable for an examination prototype.", "Real NIMC access is licensed; no real personal data was used."],
-], [8, 50, 42]);
-doc.table("Operating assumptions and dependencies", ["ID", "Assumption", "Consequence if false"], [
-  ["AS1", "NIMC is represented by a mock service with fictional records; production integration requires NIMC licensing.", "The Issuer calls the real NIMC interface; no change to credentials or verifiers."],
-  ["AS2", "The issuer signing key is held in an encrypted file in the prototype; production would use a hardware security module.", "Key-compromise risk rises (risk PD-2)."],
-  ["AS3", "L2 holders have an Android phone (own or shared) with a camera; all others use the L1 paper wallet.", "More L1 use, lower assurance."],
-  ["AS4", "Agents are given an Android smartphone by the programme.", "Verification cannot run at that point."],
-  ["AS5", "Distribution points obtain at least intermittent connectivity within seven days.", "Revocations arrive later; the 30-day refusal rule applies."],
-  ["AS6", "Entitlement (quantities and collection status) is managed by a separate programme system.", "Scope would extend into Question 3."],
-  ["AS7", "Proxy collection is prohibited by programme policy, as observed in Kura.", "A delegation feature would be needed."],
-  ["AS8", "Enrolment takes place at an office with connectivity.", "Offline issuance would need a different key-protection design."],
-], [8, 54, 38]);
+doc.appendix("A", "Repository Structure");
+doc.table("Repository structure", ["Folder", "Content"], [
+  ["core/", "qrw_core library and its tests"],
+  ["services/", "Five FastAPI services, tests and the local launcher"],
+  ["web/", "Progressive web app, browser-library tests and Playwright system tests"],
+  ["tools/", "Requirements catalogue, RTM generator, test catalogue, ZAP scan script"],
+  ["docs/uml/", "PlantUML sources for all diagrams"],
+  ["docs/evidence/", "Test, coverage, performance, Bandit, audit and ZAP reports; CI screenshot"],
+  ["docs/build/", "Generators for the seven Word and PDF documents (build_all.sh)"],
+  ["docs/deliverables/", "The seven documents in Word and PDF"],
+  [".github/workflows/", "Continuous integration pipeline"],
+], [26, 74]);
+doc.appendix("B", "Abbreviations");
+doc.table("Abbreviations", ["Term", "Meaning"], [
+  ["CI", "Continuous integration"], ["DAST / SAST", "Dynamic / static application security testing"],
+  ["FR / NFR", "Functional / non-functional requirement"], ["HSM", "Hardware security module"],
+  ["L1 / L2", "Assurance levels: paper wallet / smartphone wallet"], ["LGA", "Local Government Area"],
+  ["NIMC / NIN", "National Identity Management Commission / National Identification Number"],
+  ["NDPA", "Nigeria Data Protection Act 2023"], ["PWA", "Progressive web app"],
+  ["RBAC", "Role-based access control"], ["RTM", "Requirements Traceability Matrix"],
+  ["SPI", "Schedule performance index"], ["TDD", "Test-driven development"],
+], [24, 76], { keepRows: 20 });
 
-// =====================================================================
-doc.h1("Engineering Process");
-doc.h2("Overview and Timeline");
-doc.p(`The project followed an iterative process: requirements and models first, then implementation in daily increments, each ending with a tested build, with documentation generated from the repository at the end. Table ${doc.peekTable()} summarises the timeline; earned-value tracking is reported in QRW-PRM-05.`);
-doc.table("Project timeline", ["Date", "Phase", "Main outputs"], [
-  ["22 Oct 2026", "Problem choice and requirements", "Question 4 chosen (D1); course formats gathered from the lecture notes; first requirements and service split (D3)"],
-  ["25 Oct 2026", "Elicitation and modelling", "Elicitation localised to Kura LGA; two assurance levels (D2a); UML use case, sequence, class and state models"],
-  ["30 Oct 2026", "Detailed design and core", "Credential format (D9), test strategy (D10); core library built test-first; CI pipeline"],
-  ["3 Nov 2026", "Services, web app, security", "Five services; the progressive web app; security tests and hardening; generated RTM; candidate's local setup and first push; CI green on GitHub"],
-  ["4 Nov 2026", "Verification and documentation", "OWASP ZAP scan and fix; browser coverage; SRS, design, security, test, project and user documents"],
-  ["5–7 Nov 2026", "Validation and defence", "Phone test, this report, review, slides and rehearsal"],
-], [16, 26, 58]);
-doc.h2("Requirements Engineering (Module I)");
-doc.p("The course's elicitation techniques were compared for this problem (QRW-SRS-01, Table 2.1). Ethnography, in the form of direct non-participant observation, was chosen as the primary technique because the problem lives in a physical, low-literacy setting where much of the knowledge is tacit. The author had observed manual fertiliser distribution in Kura LGA during the 2024 wet season as a non-participant observer; that observation was written up and triangulated with published evaluations of the GES e-wallet scheme (Nwaobiala & Ubor, 2019) and reports of current state schemes (African Farming, 2026). Nine findings were recorded, each traced to the requirements it produced. Three of them changed the design: proxy collection is discouraged (so the system enforces holder presence), phones are often shared (so one wallet holds several PIN-protected profiles), and many farmers have feature phones (so a paper wallet exists).");
-doc.p("The requirements were classified into 29 functional and 19 non-functional requirements (performance, security, capacity and usability, as in the course), prioritised with MoSCoW and modelled with a use-case diagram, three sequence diagrams, a domain class diagram and two state machines, one of which is also given as a formal state-transition function. Traceability was designed in from the start: every test names the requirements it verifies, and a script generates the four-column RTM (requirement, UML artefact, code module, test case with result) from the code and the test results.");
-doc.h2("Architecture and Design (Module III)");
-doc.p("The decisive design question was where the trust decision happens. Any architecture that asks a server at the moment of verification fails the problem statement, so trust was moved to the edge with digital signatures: the verifier needs only the issuer's public key and a recent signed revocation list. The back end was then split into services on trust and availability boundaries rather than on screens: Auth (staff identity), Issuer (the only holder of the signing key), Trust and Revocation (publishes keys and the signed list), Audit and Sync (collects records into a hash chain), and a mock NIMC. Each service has its own database. Communication is synchronous where an officer is waiting, asynchronous and batched where phones synchronise, and entirely offline between wallet and verifier. A message broker and container orchestration were rejected because they serve no requirement and would cost days. QRW-SDD-02 gives the full comparison of styles, the ERD, the communication patterns and the scalability and failure-mode analysis.");
-doc.figure("Component and connector view of the system", `${UML}/AR1.png`, 15.5);
-doc.h2("Security Engineering (Module IV)");
-doc.p("Security was designed in from the first model. The threat model applies STRIDE to each trust boundary of the data-flow diagram and found nineteen threats; each has a mitigation and a verifying test. The design applies least privilege (only the Issuer holds the signing key; services verify tokens with Auth's public key and cannot mint them), defence in depth (four independent checks on every farmer) and failing securely (every error is a rejection, property-tested on random input). Staff authenticate with scrypt-hashed passwords, lockout, rate limiting and short-lived EdDSA-signed tokens with role-based access control; farmers authenticate offline by device key, PIN and face. Security testing combined static analysis (Bandit), dependency scanning (pip-audit, npm audit), black-box security tests and an authenticated OWASP ZAP scan; QRW-SEC-03 reports all of it.");
-doc.h2("Implementation");
-doc.p(`The implementation reuses a stack the author already uses professionally (Python with FastAPI; React with TypeScript and Vite), which reduced risk under a tight deadline. Table ${doc.peekTable()} summarises the code base.`);
-doc.table("Implementation summary", ["Part", "Technology", "Notes"], [
-  ["qrw_core", "Python 3.11+, cryptography", "Signing and verification, Base45 QR format, challenge–response, revocation list, hash chain; pure functions, no I/O"],
-  ["Services", "FastAPI, SQLAlchemy, PyJWT, SQLite (PostgreSQL ready)", "Five services, one Docker image, Compose file, local launcher"],
-  ["Web app", "React 18, TypeScript (strict), Vite, @noble/ed25519, Web Crypto", "Wallet, Verifier, Issuer Portal, Audit, Guided Demo; offline service worker"],
-  ["Tooling", "pytest, Hypothesis, Vitest, Playwright, Bandit, Flake8, pip-audit, OWASP ZAP, GitHub Actions", "Tests, scans and CI; RTM and documents generated by scripts"],
-  ["Size", "About 2,400 lines of production code", "24 commits from 30 October 2026, with red and green test-first commits"],
-], [14, 34, 52]);
-doc.p("Two design choices made the cross-platform implementation reliable. The issuer signs the exact payload bytes rather than a re-serialised object, so Python and the browser never disagree about what was signed; and the browser uses strict RFC 8032 verification, so it accepts exactly the signatures the server would. Both are proven by test vectors generated in Python and checked in the browser on every push.");
-doc.h2("Testing and Quality Assurance (Module II)");
-doc.p("The test strategy follows risk. The core library was built test-first, with the failing suite committed before the implementation; property-based tests prove security properties over generated inputs (for example, flipping any single bit of a credential always causes rejection); cross-implementation tests make the browser and Python agree; the services are tested black-box through their APIs; and two Playwright system tests drive the real application on three simulated devices, including fully offline verification. Continuous integration runs linting, static analysis, dependency audits, all automated tests and coverage gates on every push. QRW-TST-04 lists every test case and its result.");
-doc.h2("Project and Risk Management (Module V)");
-doc.p("Work was planned in story points against a baseline, with a cut list agreed in advance. When three planned days passed without sprint work the schedule performance index fell to 0.25; the plan was corrected by pulling work forward and cutting staff multi-factor authentication and the full Hausa translation, and the index recovered to 0.95. Eleven risks were registered with exposure RE = P × L, none in the red tier, and a maintenance plan classifies seventeen anticipated changes as corrective, adaptive, perfective or preventive (QRW-PRM-05).");
-doc.h2("Tools and Automation");
-doc.p("The course distinguishes upper-CASE tools for requirements and models from lower-CASE tools for code, analysis, build and test. Here the models are PlantUML sources kept in the repository; the requirements catalogue is a Python module; the RTM, the test-case catalogue, the charts and all seven documents are generated by scripts from the repository, so a change to a requirement, test or result flows into the documents when they are rebuilt. This kept the documentation consistent with the working system, which is the property the examiners' note on documentation without a working system is concerned with.");
-
-// =====================================================================
-doc.h1("Results");
-doc.h2("Requirements");
-doc.p("Of the 48 requirements, 43 are implemented in full and 5 in part: FR-14 (agent PIN unlock of the offline token not built), FR-27 (staff multi-factor authentication deferred), NFR-S3 (TLS only between phones and the app in the prototype), NFR-S8 (data-protection procedures such as recorded consent are organisational) and NFR-U1 (Hausa limited to the verdicts). All 48 are linked to at least one passing test or a recorded manual verification.");
-doc.h2("Testing and Quality");
-doc.table("Key results", ["Measure", "Result"], [
-  ["Automated test cases / checks", "94 / 145, all passing"],
-  ["Browser system tests", "TC-SYS-002 11/11; TC-SYS-003 16/16"],
-  ["Statement coverage", "Core 97%; services 97%; browser verifier 90%; PIN vault 100%"],
-  ["Defects found during development / open", "7 / 0"],
-  ["OWASP ZAP (after fix)", "0 High, 0 Medium, 1 Low accepted"],
-  ["Static analysis and dependency scans", "No open findings"],
-  ["Offline verification time", "0.32 ms (Python), 4.3 ms (browser library); budget 3 s"],
-  ["100,000-entry revocation list", "0.94 MB compressed in transit; 1.41 MB in the phone cache; budget 2 MB"],
-  ["Schedule performance index (4 Nov)", "0.95, recovered from 0.25"],
-], [44, 56]);
-doc.h2("Demonstration");
-doc.p("The system can be demonstrated in two ways. The Guided Demo runs the whole distribution day on one laptop, step by step, against the live services; it was run by the candidate on his own Windows laptop on 3 November with every step passing, and it is the planned demonstration for the oral defence. For a field-style demonstration, the same application runs on real phones over HTTPS on a local Wi-Fi network (QRW-USR-06, Section 4.3).");
-
-// =====================================================================
-doc.h1("Discussion");
-doc.h2("How the Design Answers the Problem");
-doc.p("The problem is not that verification is slow, but that it depends on a network that is often absent. Moving the trust decision onto the agent's phone removes that dependency completely for the moment that matters, while keeping the properties an online check would give: forgery is prevented by the signature, copying by the challenge–response, withdrawal by the revocation list, and impersonation by the face check. What cannot be achieved offline is instant revocation; the design makes that gap explicit, bounds it with list-age rules, and shows it honestly in the Guided Demo (step 13) rather than hiding it.");
-doc.h2("Key Trade-offs");
-doc.bullets([
-  "**Revocation freshness against availability.** Refusing all checks when the list is old would make the system useless where it is most needed; accepting forever would make revocation meaningless. The 7-day warning and 30-day refusal are a stated compromise.",
-  "**Inclusion against assurance.** The paper wallet admits farmers without smartphones at a lower assurance level; every acceptance records its level so the trade-off can be monitored.",
-  "**Simplicity against scale.** No broker or orchestrator was used. Because verification runs on phones, server load comes only from batched synchronisation, so the simpler architecture does not limit scale in the way it would for an online design.",
-  "**Policy in software.** Proxy collection is prohibited by the programme; the system enforces that rule rather than offering delegation, which a different programme might want.",
-]);
-doc.h2("Lessons Learned");
-doc.bullets([
-  "**Field evidence changes designs.** The original concept was a smartphone-only wallet; the observation of shared and feature phones produced multi-profile wallets and the paper wallet.",
-  "**Agree formats across languages early.** Signing exact bytes and generating shared test vectors on the first day avoided the most likely source of late, hard-to-find defects.",
-  "**Manual testing still matters.** The most serious defect (DEF-01, valid codes rejected because the scanner trimmed meaningful spaces) was surfaced by the candidate's own hands-on testing, not by the automated suite; it now has regression tests.",
-  "**Scanners find what tests miss.** The OWASP ZAP scan found a missing security header on the API documentation pages that no test had looked for.",
-  "**Plan for slippage.** The cut list, agreed before it was needed, turned a schedule crisis into a set of known, documented deferrals.",
-]);
-
-// =====================================================================
-doc.h1("Limitations and Future Work");
-doc.h2("Limitations");
-doc.bullets([
-  "Elicitation rests on a single observer's retrospective observation in one LGA and season, triangulated with published sources; no structured interviews or usability tests with farmers and agents were carried out.",
-  "The prototype uses a mock NIMC, SQLite and a file-based signing key; production needs NIMC integration, PostgreSQL and a hardware security module.",
-  "Performance was measured on a test machine; a field trial on low-end Android phones in Kura has not yet been done.",
-  "Five requirements are only partly met, as listed in Section 4.1.",
-]);
-doc.h2("Future Work");
-doc.p("In order of value: a field pilot with agents and farmers, including a think-aloud usability evaluation of the Verifier; staff multi-factor authentication and the full Hausa interface; delta revocation lists small enough for SMS or USSD to shrink the revocation gap; storing the farmer's signed answer for non-repudiation; and, for production, NIMC integration, an HSM and a data protection impact assessment. These are scheduled in the maintenance plan (QRW-PRM-05, Section 5).");
-
-// =====================================================================
-doc.h1("Ethical, Legal and Social Considerations");
-doc.bullets([
-  "**Privacy and data protection.** The design follows the minimisation and purpose-limitation principles of the Nigeria Data Protection Act 2023: the credential carries a masked NIN and no BVN, telephone number or date of birth; the full NIN is never stored; audit records hold credential identifiers, not personal details. Recorded consent at enrolment and a data protection impact assessment are required before any real deployment.",
-  "**Inclusion.** Farmers without smartphones are not excluded: they receive a paper wallet. Shared family phones are supported with separate PIN-protected profiles. Verdicts are shown in Hausa as well as English, with colour and icons for low-literacy users.",
-  "**Fairness and human oversight.** The face check is made by a person, not an algorithm, so no biometric model with possible demographic bias decides who receives fertiliser. Rejections are recorded with their reason so that wrongful refusals can be reviewed.",
-  "**Honest evidence.** No field data was invented. Personas are labelled as illustrative composites; all test data is fictional; every performance figure is measured by a test in the repository; and partial requirements are reported as partial.",
-]);
-
-// =====================================================================
-doc.h1("Statement on the Use of AI");
-doc.p("Instruction F requires responsible and ethical use of AI. In keeping with that, this section states plainly how AI was used, what the candidate did, and how the work was checked.");
-doc.h2("Tool Used");
-doc.p("Claude, an AI assistant made by Anthropic, was used throughout the project as a working collaborator, in a series of sessions directed by the candidate. All AI-assisted commits in the repository carry a Co-Authored-By trailer naming the assistant, so its involvement is visible in the version history.");
-doc.h2("What the AI Did");
-doc.bullets([
-  "Discussed and critiqued options with the candidate: the choice of question against the marking rubric, the architecture, the security design and the test strategy.",
-  "Drafted the elicitation write-up from the candidate's account of his observation in Kura and from general knowledge of the context; the candidate then checked, corrected and localised it.",
-  "Wrote most of the source code and tests, and drafts of the UML models and all seven documents, under the candidate's direction.",
-  "Ran the automated tests, coverage, static analysis, dependency audits and the OWASP ZAP scan in its own workspace, and fixed the defects found.",
-  "Prepared step-by-step guides that the candidate used to set up the project on his own laptop and GitHub.",
-]);
-doc.h2("What the Candidate Did");
-doc.bullets([
-  "Chose the question and the case study, and supplied the field observation from Kura LGA (2024 wet season) on which the requirements rest.",
-  "Made or approved every significant decision recorded in the decision log, including the two assurance levels, the ban on proxy collection, the separate documents and the department writing style.",
-  "Gathered the lecturer's formats for the SRS, RTM, STRIDE table, risk register and UML from the course materials, so that the artefacts follow the course rather than generic templates.",
-  "Set up and ran the system on his own laptop, published it to GitHub, ran the Guided Demo end to end, and through that hands-on testing surfaced the scanner defect DEF-01.",
-  "Reviewed the documents and is responsible for the submission and its oral defence.",
-]);
-doc.h2("Safeguards");
-doc.bullets([
-  "**Verification by tests, not trust.** AI-written code was accepted only when it passed the automated tests, coverage gates and scans in CI; claims in the documents are backed by measured results in the repository.",
-  "**No fabricated evidence.** The AI was not used to invent field observations, interviews, users or measurements. Where evidence did not exist, the documents say so (for example, the phone field test is reported as pending).",
-  "**Transparency.** AI involvement is declared here and in every AI-assisted commit.",
-  "**Understanding.** The candidate asked for explanations of each design choice and worked through an interactive walkthrough of the protocol, so that he can explain and defend the design, security and testing choices orally.",
-]);
-
-doc.h1("Conclusion");
-doc.p("The project set out to let a rural farmer prove who he is when the network fails. The engineered solution does that by moving trust to the edge with signed credentials, binding each credential to its holder with an offline challenge–response, and keeping accountability through a tamper-evident audit trail that synchronises when it can. It was built with the methods of the course: ethnographic elicitation and traceable requirements, a justified offline-first service architecture, STRIDE-based security engineering with layered defences, test-driven development with property-based, cross-implementation and system testing in continuous integration, and managed risk and maintenance. The prototype runs, its claims are tested, and its limits are stated. The next step is a field pilot in Kura.");
-
-doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete technical report"]]).then(() => console.log("written", process.argv[2]));
+doc.save(process.argv[2], []).then(() => console.log("written", process.argv[2]));

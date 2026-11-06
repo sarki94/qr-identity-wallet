@@ -53,7 +53,7 @@ class Doc {
   h1(title) {
     this.section += 1; this.sub = 0; this.subsub = 0;
     // The body section already starts on a new page; a page break before its first heading made LibreOffice drop it.
-    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, pageBreakBefore: this.body.length > 0,
+    this.body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, pageBreakBefore: this.body.length > 0 && !this.meta.continuous,
       children: [new TextRun({ text: `${this.section}. ${title.toUpperCase()}`, bold: true, font: FONT, size: PT })] }));
   }
   appendix(letter, title) {
@@ -151,8 +151,30 @@ class Doc {
       spacing: { line: LINE, lineRule: LineRuleType.AUTO, after: 120 }, indent: { left: 720, hanging: 720 }, children: runs(r) })));
   }
   // ---- front matter ----------------------------------------------------
+  /** Title page of a technical report: report details, then the abstract (no thesis-style "BY" page). */
+  reportCover() {
+    const m = this.meta;
+    const left = (text, opts = {}) => new Paragraph({ alignment: opts.align || AlignmentType.LEFT,
+      spacing: { after: opts.after ?? 120, before: opts.before || 0, line: opts.line || 300, lineRule: LineRuleType.AUTO },
+      border: opts.rule ? { bottom: RULE } : undefined,
+      children: runs(text, { bold: !!opts.bold, size: opts.size || PT, italics: !!opts.italics }) });
+    const out = [
+      left(`TECHNICAL REPORT ${m.code}`, { bold: true, rule: true, after: 360 }),
+      left(m.reportTitle, { bold: true, size: 32, after: 120 }),
+      left(m.reportSubtitle, { size: 26, after: 360 }),
+    ];
+    const t = this.body; this.body = []; const sec = this.section; this.section = 0;
+    this.table("Report details", ["Item", "Detail"], m.details, [30, 70], { unnumbered: true, keepRows: 20 });
+    this.section = sec; this.tableNo[0] = 0;
+    out.push(...this.body); this.body = t;
+    out.push(left("**Abstract**", { before: 120, after: 80 }));
+    out.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { line: 300, lineRule: LineRuleType.AUTO, after: 120 }, children: runs(m.abstract) }));
+    out.push(left(`**Keywords:** ${m.keywords}`, { after: 0 }));
+    return out;
+  }
   cover() {
     const m = this.meta;
+    if (m.layout === "report") return this.reportCover();
     const c = (text, opts = {}) => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: opts.after ?? 120, before: opts.before || 0, line: 300, lineRule: LineRuleType.AUTO },
       children: [new TextRun({ text, font: FONT, size: opts.size || PT, bold: !!opts.bold, italics: !!opts.italics })] });
     return [
@@ -191,7 +213,7 @@ class Doc {
   async save(file, history) {
     const footer = (fmt) => new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
       children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 20 })] })] });
-    const control = this.control(history);
+    const control = this.meta.layout === "report" ? [] : this.control(history);
     const tocTitle = new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: "TABLE OF CONTENTS", bold: true, font: FONT, size: PT })] });
     const toc = new TableOfContents("Table of Contents", { hyperlink: true, headingStyleRange: "1-3" });
     const page = { size: { width: PAGE_W, height: PAGE_H }, margin: MARGIN };
@@ -218,7 +240,7 @@ class Doc {
       sections: [
         { properties: { page }, children: this.cover() },
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.LOWER_ROMAN } }, type: SectionType.NEXT_PAGE },
-          footers: { default: footer() }, children: [...control, new Paragraph({ children: [new PageBreak()] }), tocTitle, toc] },
+          footers: { default: footer() }, children: this.meta.layout === "report" ? [tocTitle, toc] : [...control, new Paragraph({ children: [new PageBreak()] }), tocTitle, toc] },
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL } }, type: SectionType.NEXT_PAGE },
           footers: { default: footer() }, children: this.body },
         ...this.landscape.map((children) => ({ properties: { type: SectionType.NEXT_PAGE, page: { size: { width: PAGE_W, height: PAGE_H, orientation: PageOrientation.LANDSCAPE }, margin: MARGIN } },
