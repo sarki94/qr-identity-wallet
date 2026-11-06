@@ -5,13 +5,15 @@ const { Doc } = require("./lib");
 const UML = process.env.UML_PNG;
 
 const doc = new Doc({
-  code: "QRW-TR-07", title: "Technical Report", version: "1.1", date: "6 November 2026", layout: "report", continuous: true,
+  code: "QRW-TR-07", title: "Technical Report", version: "1.2", date: "6 November 2026", layout: "report", continuous: true,
   reportTitle: "Offline-First Cryptographic QR Identity Wallet for Rural Public Services",
   reportSubtitle: "Technical report on the engineering of the solution to COEN838 Question 4",
   details: [
-    ["Report number", "QRW-TR-07, version 1.1"],
+    ["Report number", "QRW-TR-07, version 1.2"],
     ["Date", "6 November 2026"],
-    ["Prepared by", "Aliyu Sarki Iliyasu (P25EGCP8040)"],
+    ["Prepared by", "Aliyu Sarki Iliyasu"],
+    ["Registration number", "P25EGCP8040"],
+    ["Programme", "MSc Computer Engineering"],
     ["Course", "COEN838 Advanced Software Engineering, project examination, Question 4"],
     ["Institution", "Department of Computer Engineering, Ahmadu Bello University, Zaria"],
     ["Source code", "https://github.com/sarki94/qr-identity-wallet"],

@@ -174,22 +174,25 @@ class Doc {
   }
   cover() {
     const m = this.meta;
-    if (m.layout === "report") return this.reportCover();
     const c = (text, opts = {}) => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: opts.after ?? 120, before: opts.before || 0, line: 300, lineRule: LineRuleType.AUTO },
       children: [new TextRun({ text, font: FONT, size: opts.size || PT, bold: !!opts.bold, italics: !!opts.italics })] });
+    const logo = fs.readFileSync(path.join(__dirname, "assets", "abu-coen-logo.png"));
+    const { w, h } = pngSize(logo), wpx = 160;
     return [
-      c("AHMADU BELLO UNIVERSITY, ZARIA", { bold: true, before: 600 }),
+      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 0, after: 240 },
+        children: [new ImageRun({ type: "png", data: logo, transformation: { width: wpx, height: Math.round(wpx * h / w) } })] }),
+      c("AHMADU BELLO UNIVERSITY, ZARIA", { bold: true }),
       c("FACULTY OF ENGINEERING", { bold: true }),
       c("DEPARTMENT OF COMPUTER ENGINEERING", { bold: true, after: 600 }),
       c("COEN838: ADVANCED SOFTWARE ENGINEERING", { bold: true }),
-      c("Project Examination, Question 4", { after: 900 }),
+      c("Project Examination, Question 4", { after: 700 }),
       c("OFFLINE-FIRST CRYPTOGRAPHIC QR IDENTITY WALLET", { bold: true, size: 32 }),
       c("FOR RURAL PUBLIC SERVICES", { bold: true, size: 32, after: 500 }),
       c(m.title.toUpperCase(), { bold: true, size: 28, after: 120 }),
-      c(`Document ${m.code} · Version ${m.version}`, { after: 1200 }),
+      c(`Document ${m.code} · Version ${m.version}`, { after: 900 }),
       c("BY", { after: 200 }),
       c("ALIYU SARKI ILIYASU", { bold: true }),
-      c("P25EGCP8040", { after: 1200 }),
+      c("P25EGCP8040", { after: 900 }),
       c(m.date, {}),
     ];
   }
@@ -229,6 +232,8 @@ class Doc {
             run: { font: FONT, size: PT, bold: true, color: "000000" }, paragraph: { spacing: { before: 240, after: 120 }, keepNext: true, outlineLevel: 1 } },
           { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true,
             run: { font: FONT, size: PT, bold: true, color: "000000" }, paragraph: { spacing: { before: 200, after: 100 }, keepNext: true, outlineLevel: 2 } },
+          ...[1, 2, 3].map((n) => ({ id: `TOC${n}`, name: `toc ${n}`, basedOn: "Normal", next: "Normal",
+            paragraph: { spacing: { line: 300, lineRule: LineRuleType.AUTO, before: 0, after: 40 }, indent: { left: (n - 1) * 280 } } })),
           { id: "Heading4", name: "Heading 4", basedOn: "Normal", next: "Normal", quickFormat: true,
             run: { font: FONT, size: PT, italics: true, color: "000000" }, paragraph: { spacing: { before: 160, after: 80 }, keepNext: true, outlineLevel: 3 } },
         ],
@@ -240,7 +245,7 @@ class Doc {
       sections: [
         { properties: { page }, children: this.cover() },
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.LOWER_ROMAN } }, type: SectionType.NEXT_PAGE },
-          footers: { default: footer() }, children: this.meta.layout === "report" ? [tocTitle, toc] : [...control, new Paragraph({ children: [new PageBreak()] }), tocTitle, toc] },
+          footers: { default: footer() }, children: [...(this.meta.layout === "report" ? this.reportCover() : control), new Paragraph({ children: [new PageBreak()] }), tocTitle, toc] },
         { properties: { page: { ...page, pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL } }, type: SectionType.NEXT_PAGE },
           footers: { default: footer() }, children: this.body },
         ...this.landscape.map((children) => ({ properties: { type: SectionType.NEXT_PAGE, page: { size: { width: PAGE_W, height: PAGE_H, orientation: PageOrientation.LANDSCAPE }, margin: MARGIN } },
