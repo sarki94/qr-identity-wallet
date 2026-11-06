@@ -138,7 +138,7 @@ doc.bullets([
   "Low-end Android phones and low literacy among users (Section 2.3).",
 ]);
 doc.h2("Assumptions and Dependencies");
-doc.p(`As required by Instruction D of the examination, every assumption made in interpreting the problem is stated in Table ${doc.peekTable()}.`);
+doc.p(`As required by Instruction D of the examination, every assumption made in interpreting the problem is stated in Table ${doc.peekTable()}. Domain invariants that practitioners treat as obvious, such as the phone clock being right (AS9), are stated explicitly because leaving such tacit knowledge unstated is a common cause of requirements failure.`);
 doc.table("Assumptions and dependencies", ["ID", "Assumption", "Consequence if false"], [
   ["AS1", "NIMC is represented by a mock service with fictional records; production integration requires NIMC licensing.", "Issuer must call the real NIMC interface; no change to credentials or verifiers."],
   ["AS2", "The issuer signing key is held in an encrypted file in the prototype; production would use a hardware security module.", "Key compromise risk rises; see risk register."],
@@ -148,6 +148,7 @@ doc.table("Assumptions and dependencies", ["ID", "Assumption", "Consequence if f
   ["AS6", "Entitlement (quantities and collection status) is managed by a separate programme system.", "Scope would extend into Question 3."],
   ["AS7", "Proxy collection is prohibited by programme policy (observed in Kura).", "A delegation feature would be needed."],
   ["AS8", "Enrolment takes place at an office with connectivity.", "Offline issuance would need a different key-protection design."],
+  ["AS9", "The agent's phone shows the correct date (to within a day). Expiry checks and the 7- and 30-day list-age rules use the phone's clock; the demo clock can only move time forward, which makes the rules stricter.", "An expired credential or a stale list could be accepted if the clock is set back; planned fix: compare with server time at each sync."],
 ], [8, 57, 35]);
 
 // =====================================================================
@@ -294,7 +295,7 @@ doc.p(`Every push triggers the GitHub Actions jobs listed in Table ${doc.peekTab
 doc.table("Continuous-integration jobs", ["Job", "Steps"], [
   ["Core", "Flake8 lint; Bandit static analysis; pytest with Hypothesis property tests; 90 % coverage gate"],
   ["Services", "Flake8; Bandit; pip-audit dependency scan; API, security, integration and system tests; 90 % coverage gate"],
-  ["Web", "npm audit of shipped packages; TypeScript strict type-check; Vitest cross-language tests; production build"],
+  ["Web", "npm audit of shipped packages; TypeScript strict type-check; Vitest cross-language tests with coverage; production build"],
   ["Docker", "Builds the service image"],
 ], [16, 84]);
 doc.h2("Requirements Traceability");

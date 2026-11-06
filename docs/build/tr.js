@@ -69,7 +69,7 @@ doc.table("Deliverables", ["Item", "Where"], [
 
 // =====================================================================
 doc.h1("Assumptions");
-doc.p("Instruction D of the examination requires every assumption made in interpreting the problem to be stated. Table " + doc.peekTable() + " gives the interpretation of the problem; Table " + doc.section + "." + ((doc.tableNo[doc.section] || 0) + 2) + " gives the operating assumptions the design relies on.");
+doc.p("Instruction D of the examination requires every assumption made in interpreting the problem to be stated. Table " + doc.peekTable() + " gives the interpretation of the problem; Table " + doc.section + "." + ((doc.tableNo[doc.section] || 0) + 2) + " gives the operating assumptions the design relies on, including domain invariants that are easy to leave unstated because they seem obvious, such as the phone's clock being right (AS9).");
 doc.table("Assumptions in interpreting the problem", ["ID", "Assumption", "Reason"], [
   ["IA1", "\"Rural public services\" is addressed through one concrete service, the collection of subsidised fertiliser; clinic attendance is a secondary case using the same mechanism.", "Both are named in the problem; a concrete case gives testable requirements and matches the author's own observation."],
   ["IA2", "\"Offline-first\" applies to verification at the point of service. Enrolment and issuance happen online at an LGA office.", "Issuance needs NIMC and must protect the signing key, which is unsafe on a field device."],
@@ -88,12 +88,15 @@ doc.table("Operating assumptions", ["ID", "Assumption", "Consequence if false"],
   ["AS6", "Entitlement is managed by a separate programme system.", "Scope would extend into Question 3."],
   ["AS7", "Proxy collection is prohibited by programme policy, as observed in Kura.", "A delegation feature would be needed."],
   ["AS8", "Enrolment takes place at an office with connectivity.", "Offline issuance would need a different key-protection design."],
+  ["AS9", "The agent's phone shows the correct date (to within a day); expiry and list-age checks use the phone's clock.", "An expired credential or stale list could pass if the clock is set back; planned fix: check against server time at sync."],
 ], [8, 54, 38]);
 
 // =====================================================================
 doc.h1("Engineering Approach");
 doc.h2("Development Methodology");
 doc.p("An iterative, Agile-style process was used, adapted to a solo developer and a fixed deadline: requirements and models first, then daily increments that each ended in a tested build, with a written sprint plan, an agreed scope cut list, daily earned-value tracking and a decision log. The security-critical core was built test-first. Waterfall was rejected because problems with how the browser and the server agree on signatures had to surface on the day they appeared, not at the end.");
+doc.h2("Version Control and Continuous Integration");
+doc.p("All code, UML sources, requirements, evidence and document generators are kept in one Git repository on GitHub, so every change to a specification or to the code is tracked and can be traced to its commit. Commits use a conventional prefix (feat, fix, test, docs) and test-first work shows as a failing-test commit followed by the implementation. Every push runs the GitHub Actions pipeline: linting, static analysis, dependency audits, all automated tests with coverage gates of 90%, the web build and the Docker image build. A change that breaks any of these is marked failed before it can be relied on.");
 doc.h2("Phases and Timeline");
 doc.table("Phases and timeline", ["Date", "Phase", "Output"], [
   ["22 Oct 2026", "Inception", "Question chosen (D1); course formats collected from the lecture notes; service split (D3)"],
@@ -217,6 +220,7 @@ doc.table("Limitations and open items", ["Item", "Impact", "Plan"], [
   ["Five partial requirements (Section 7.1)", "Lower staff assurance; Hausa limited to verdicts", "Maintenance plan, QRW-PRM-05"],
   ["Mock NIMC, SQLite, file-based signing key", "Not production-grade", "NIMC integration, PostgreSQL, HSM"],
   ["Revocation reaches offline points only on sync", "Revoked credential may pass for up to 30 days", "Delta lists over SMS or USSD"],
+  ["Verifier relies on the phone's clock (AS9)", "Setting the clock back could hide expiry or list age", "Check against server time at each sync"],
   ["Browser system tests run by hand, not in CI", "Regressions in screens found later", "Add to CI"],
   ["Elicitation by one observer; no usability test with users", "Usability claims rest on inspection", "Think-aloud evaluation in a pilot"],
 ], [32, 36, 32]);
