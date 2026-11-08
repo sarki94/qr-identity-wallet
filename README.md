@@ -35,7 +35,7 @@ pytest --cov=qrw_core        # 53 tests
 flake8 qrw_core tests
 bandit -r qrw_core
 cd ../services
-pytest --cov=qrw_services    # 49 tests, including security and end-to-end tests
+pytest --cov=qrw_services    # 52 tests, including security and end-to-end tests
 ```
 
 ## Quick start: the Guided Demo (Windows)

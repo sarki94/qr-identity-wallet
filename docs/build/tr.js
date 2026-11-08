@@ -5,11 +5,11 @@ const { Doc } = require("./lib");
 const UML = process.env.UML_PNG;
 
 const doc = new Doc({
-  code: "QRW-TR-07", title: "Technical Report", version: "1.3", date: "8 November 2026", layout: "report", continuous: true,
+  code: "QRW-TR-07", title: "Technical Report", version: "1.4", date: "8 November 2026", layout: "report", continuous: true,
   reportTitle: "Offline-First Cryptographic QR Identity Wallet for Rural Public Services",
   reportSubtitle: "Technical report on the engineering of the solution to COEN838 Question 4",
   details: [
-    ["Report number", "QRW-TR-07, version 1.3"],
+    ["Report number", "QRW-TR-07, version 1.4"],
     ["Date", "8 November 2026"],
     ["Prepared by", "Aliyu Sarki Iliyasu"],
     ["Registration number", "P25EGCP8040"],
@@ -18,9 +18,8 @@ const doc = new Doc({
     ["Institution", "Department of Computer Engineering, Ahmadu Bello University, Zaria"],
     ["Source code", "https://github.com/sarki94/qr-identity-wallet"],
     ["Companion documents", "QRW-SRS-01, QRW-SDD-02, QRW-SEC-03, QRW-TST-04, QRW-PRM-05, QRW-USR-06"],
-    ["Status", "Final for submission"],
   ],
-  abstract: "Rural citizens in Nigeria are often refused public services because online NIN verification fails where there is no network. This report describes the engineering of an offline-first cryptographic QR identity wallet, applied to the collection of subsidised fertiliser in Kura LGA, Kano State. A farmer receives an Ed25519-signed credential held in a phone wallet or printed on paper; the agent's phone verifies it with no network by checking the signature, a challenge–response that proves the wallet is not a copy, a cached signed revocation list and a face check, and later uploads each record to a hash-chained audit log. The prototype (core library, five services, one progressive web app) meets 43 of 48 requirements in full and 5 in part; 94 automated test cases pass; and the final security scan has no high- or medium-risk finding. The report states the assumptions made, the process followed, the results, the issues met and the work that remains.",
+  abstract: "Rural citizens in Nigeria are often refused public services because online NIN verification fails where there is no network. This report describes the engineering of an offline-first cryptographic QR identity wallet, applied to the collection of subsidised fertiliser in Kura LGA, Kano State. A farmer receives an Ed25519-signed credential held in a phone wallet or printed on paper; the agent's phone verifies it with no network by checking the signature, a challenge–response that proves the wallet is not a copy, a cached signed revocation list and a face check, and later uploads each record to a hash-chained audit log. The prototype (core library, five services, one progressive web app) meets 43 of 48 requirements in full and 5 in part; 98 automated test cases pass; and the final security scan has no high- or medium-risk finding. The report states the assumptions made, the process followed, the results, the issues met and the work that remains.",
   keywords: "offline-first, digital identity, Ed25519, QR code, revocation, STRIDE, test-driven development",
 });
 
@@ -30,9 +29,9 @@ doc.p("The task was to engineer, with the methods of Modules I to V, a working s
 doc.table("Outcome at a glance", ["Area", "Outcome"], [
   ["Working software", "Core library, five services and a progressive web app; runs on one laptop with one launcher, or on phones over HTTPS"],
   ["Requirements", "48 requirements: 43 implemented, 5 partial; all traced to tests or manual verification"],
-  ["Testing", "94 test cases, 145 checks, all passing; coverage 97% (core), 97% (services)"],
-  ["Security", "19 STRIDE threats mitigated; OWASP ZAP: 0 High, 0 Medium after fix; no open static-analysis or dependency findings"],
-  ["Schedule", "Schedule performance index 0.95 on 4 November after recovering from 0.25"],
+  ["Testing", "98 test cases, 149 checks, all passing; coverage 97% (core), 97% (services)"],
+  ["Security", "20 STRIDE threats mitigated; audit records signed; OWASP ZAP: 0 High, 0 Medium after fix; no open static-analysis or dependency findings"],
+  ["Schedule", "Schedule performance index 0.94 at submission, after recovering from 0.25 on 2 November"],
   ["Open items", "Five partial requirements and production hardening (Section 9)"],
 ], [22, 78]);
 
@@ -158,7 +157,7 @@ doc.p("Table " + doc.peekTable() + " summarises what was done in each area of th
 doc.table("Work performed and evidence", ["Area", "Work performed", "Evidence"], [
   ["Requirements and traceability (Module I)", "Ethnographic elicitation (non-participant observation in Kura LGA, 2024 wet season) triangulated with published sources; 29 FR and 19 NFR with MoSCoW priorities; use-case, sequence, class and state models; RTM generated from test tags", "QRW-SRS-01, Appendix A"],
   ["Architecture and design (Module III)", "Offline-first edge verification with a service-oriented back end; four styles compared; ERD with database per service; synchronous, asynchronous and offline patterns justified; scalability and failure modes analysed", "QRW-SDD-02"],
-  ["Security engineering (Module IV)", "STRIDE on six trust boundaries (19 threats); least privilege, defence in depth, fail securely; offline holder authentication and staff RBAC; SAST, dependency scans, security tests, OWASP ZAP", "QRW-SEC-03"],
+  ["Security engineering (Module IV)", "STRIDE on six trust boundaries (20 threats); least privilege, defence in depth, fail securely; offline holder authentication and staff RBAC; SAST, dependency scans, security tests, OWASP ZAP", "QRW-SEC-03"],
   ["Implementation", "Working core, services and web app; one-click launcher; Docker; phone mode over HTTPS", "Repository; QRW-USR-06"],
   ["Testing and QA (Module II)", "TDD with red–green commits; property-based, cross-implementation, integration, security and browser system tests; CI with coverage gates", "QRW-TST-04"],
   ["Project and risk management (Module V)", "Sprint plan and cut list; earned value; burndown; technical debt ratio; risk register (RE = P × L); maintenance plan by class", "QRW-PRM-05"],
@@ -177,10 +176,10 @@ doc.table("Partially met requirements", ["Requirement", "Missing part"], [
 ], [20, 80]);
 doc.h2("Test Results");
 doc.table("Test results", ["Measure", "Result"], [
-  ["Automated test cases / checks", "94 / 145, all passing"],
-  ["Browser system tests", "TC-SYS-002 11/11; TC-SYS-003 16/16 (re-run 4 November)"],
+  ["Automated test cases / checks", "98 / 149, all passing"],
+  ["Browser system tests", "TC-SYS-002 11/11; TC-SYS-003 16/16 (re-run 8 November)"],
   ["Statement coverage", "Core 97%; services 97%; browser verifier 90%; PIN vault 100%"],
-  ["Defects found / open", "7 / 0"],
+  ["Defects found / open", "8 / 0"],
 ], [40, 60]);
 doc.h2("Non-Functional Targets");
 doc.table("Measured against targets", ["Requirement", "Target", "Measured"], [
@@ -195,6 +194,7 @@ doc.table("Security results", ["Check", "Result"], [
   ["Bandit (SAST)", "0 open; one false positive triaged, one finding fixed"],
   ["pip-audit / npm audit", "0 known vulnerabilities in shipped packages"],
   ["Security test cases", "24 checks (TC-SEC-001 to 012), all passing"],
+  ["Audit log integrity", "Signed record hashes: a rewritten and recomputed chain is detected (TC-SVC-034)"],
   ["OWASP ZAP (authenticated, full active scan)", "Before: 1 Medium. After fix: 0 High, 0 Medium, 1 Low accepted"],
 ], [40, 60]);
 doc.h2("Demonstration Readiness");
@@ -204,7 +204,7 @@ doc.p("The working software was tested through its web interface. The Guided Dem
 doc.h1("Issues and Resolutions");
 doc.p("Table " + doc.peekTable() + " records the significant issues met during the project and how each was resolved.");
 doc.table("Issues log", ["ID", "Issue", "Impact", "Resolution"], [
-  ["IS-1", "Three planned days with no sprint work (SPI 0.25 on 2 Nov)", "Deadline risk", "Re-plan, work pulled forward, cut list applied; SPI 0.95 on 4 Nov"],
+  ["IS-1", "Three planned days with no sprint work (SPI 0.25 on 2 Nov)", "Deadline risk", "Re-plan, work pulled forward, cut list applied; SPI 1.02 on 4 Nov"],
   ["IS-2", "Python packages would not install on the candidate's Windows laptop", "Setup blocked", "Corrected install paths and a fallback; README and manual updated"],
   ["IS-3", "Services not running during manual testing gave confusing errors", "Demo risk", "One-click launcher and the Guided Demo"],
   ["IS-4", "Valid QR codes rejected because the scanner trimmed meaningful spaces (DEF-01)", "Genuine farmers refused", "Fixed; clearer messages per code type; regression tests"],
@@ -213,6 +213,8 @@ doc.table("Issues log", ["ID", "Issue", "Impact", "Resolution"], [
   ["IS-7", "No Content-Security-Policy on API documentation pages (DEF-04, DEF-05)", "Security", "Fixed test-first; documentation switch for production"],
   ["IS-8", "Navigation tabs overflowed on phone screens", "Usability", "Layout fixed; system tests re-run"],
   ["IS-9", "Git file-lock prompts on Windows", "Workflow friction", "Answer \"n\"; disable automatic housekeeping"],
+  ["IS-10", "Independent review: an insider could edit an audit record and recompute the hash chain (DEF-08)", "Security", "Each record hash signed with a key outside the database; tests TC-SVC-034 to 036"],
+  ["IS-11", "Independent review: the list-age rule (FR-21) had no automated test", "Test coverage", "Rule moved into the tested library; TC-WEB-017"],
 ], [9, 36, 17, 38], { size: 18 });
 
 // =====================================================================
@@ -221,6 +223,7 @@ doc.table("Limitations and open items", ["Item", "Impact", "Plan"], [
   ["Five partial requirements (Section 7.1)", "Lower staff assurance; Hausa limited to verdicts", "Maintenance plan, QRW-PRM-05"],
   ["Mock NIMC, SQLite, file-based signing key", "Not production-grade", "NIMC integration, PostgreSQL, HSM"],
   ["Revocation reaches offline points only on sync", "Revoked credential may pass for up to 30 days", "Delta lists over SMS or USSD"],
+  ["Stolen agent phone usable until its 7-day token expires", "Checks possible in that agent's name", "Agent PIN unlock (FR-14) and a token deny-list at sync"],
   ["Verifier relies on the phone's clock (AS9)", "Setting the clock back could hide expiry or list age", "Check against server time at each sync"],
   ["Browser system tests run by hand, not in CI", "Regressions in screens found later", "Add to CI"],
   ["Elicitation by one observer; no usability test with users", "Usability claims rest on inspection", "Think-aloud evaluation in a pilot"],

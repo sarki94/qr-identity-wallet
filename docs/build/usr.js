@@ -222,9 +222,9 @@ doc.code([
   "cd core",
   "pytest --cov=qrw_core        # 53 unit and property tests",
   "cd ../services",
-  "pytest --cov=qrw_services    # 49 integration, security, E2E",
+  "pytest --cov=qrw_services    # 52 integration, security, E2E",
   "cd ../web",
-  "npm run coverage             # 16 browser-library tests",
+  "npm run coverage             # 17 browser-library tests",
   "cd ..",
   "python tools/rtm.py          # all suites + regenerate RTM",
 ]);

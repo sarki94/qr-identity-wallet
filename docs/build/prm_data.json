@@ -1,19 +1,140 @@
 {
   "bac": 68,
-  "dates": ["30 Oct", "31 Oct", "1 Nov", "2 Nov", "3 Nov", "4 Nov", "5 Nov", "6 Nov", "7 Nov"],
-  "pv":    [8, 16, 24, 32, 40, 56, 60, 64, 68],
-  "ev":    [8, 8, 8, 8, 36, 53, null, null, null],
+  "dates": [
+    "30 Oct",
+    "31 Oct",
+    "1 Nov",
+    "2 Nov",
+    "3 Nov",
+    "4 Nov",
+    "5 Nov",
+    "6 Nov",
+    "7 Nov",
+    "8 Nov"
+  ],
+  "pv": [
+    8,
+    16,
+    24,
+    32,
+    40,
+    56,
+    60,
+    64,
+    68,
+    68
+  ],
+  "ev": [
+    8,
+    8,
+    8,
+    8,
+    36,
+    57,
+    57,
+    61,
+    61,
+    64
+  ],
   "risks": [
-    ["PR-1", "Project", "Schedule slip before the 8 November deadline (solo developer; another examination due the same week)", 0.5, 4, "Cut list applied early; SPI checked daily; documents generated from the code so they cannot drift; work pulled forward when ahead", "Open: SPI 0.95 on 4 Nov"],
-    ["PR-2", "Project", "Live demonstration fails during the oral defence (laptop, network, camera or browser)", 0.3, 3, "Whole system runs offline on one laptop; one-click launcher; paste fallback for every QR; Guided Demo; screenshots and the browser test recordings as backup", "Open: rehearsal 7 Nov"],
-    ["PR-3", "Project", "Toolchain differences break the build on the candidate's Windows laptop", 0.3, 1, "Pinned versions; CI on every push; beginner setup guide; fallback install commands", "Occurred once (pip on Windows), fixed"],
-    ["PR-4", "Project", "Loss of work through a single failed machine", 0.1, 5, "GitHub remote; dated update bundles; generated documents rebuilt from source", "Closed"],
-    ["PD-1", "Product", "Revoked credential accepted at an offline point before the verifier next syncs", 0.5, 3, "Verifier warns at 7 days and refuses at 30; credential expiry; sync whenever a signal is available; planned delta lists", "Accepted (residual)"],
-    ["PD-2", "Product", "Issuer signing key stolen, allowing forged identities", 0.05, 30, "Key only in the Issuer, encrypted at rest; production HSM; key IDs allow rotation and mass re-issue", "Open (production)"],
-    ["PD-3", "Product", "Impostor uses a paper wallet (L1), checked only by face", 0.4, 2, "Assurance level recorded per check; L2 preferred; agent training; audit anomaly report", "Accepted (residual)"],
-    ["PD-4", "Product", "Verifier too slow or incompatible on low-end Android phones", 0.3, 3, "Measured 4.3 ms per check in the browser library; PWA uses standard Web Crypto; phone test before defence", "Open: phone test pending"],
-    ["PD-5", "Product", "Vulnerable or outdated dependencies (development tools; Node 20 end of support in CI)", 0.5, 1, "pip-audit and npm audit in CI; dependency removed when advisory found; scheduled adaptive upgrades", "Open: monitored"],
-    ["PD-6", "Product", "Non-compliance with the Nigeria Data Protection Act 2023", 0.2, 10, "Data minimisation by design; NIN hashed; consent step at enrolment; data protection impact assessment before rollout", "Open (production)"],
-    ["PD-7", "Product", "Low adoption by agents and farmers (literacy, shared phones, trust)", 0.4, 5, "Three-tap Verifier flow; Hausa verdicts; paper wallet for feature-phone users; agent training in the rollout plan", "Open (rollout)"]
+    [
+      "PR-1",
+      "Project",
+      "Schedule slip before the 8 November deadline (solo developer; another examination due the same week)",
+      0.5,
+      4,
+      "Cut list applied early; SPI checked daily; documents generated from the code so they cannot drift; work pulled forward when ahead",
+      "Occurred; mitigated (SPI 0.94 at submission)"
+    ],
+    [
+      "PR-2",
+      "Project",
+      "Live demonstration fails during the oral defence (laptop, network, camera or browser)",
+      0.3,
+      3,
+      "Whole system runs offline on one laptop; one-click launcher; paste fallback for every QR; Guided Demo; screenshots and the browser test recordings as backup",
+      "Open: rehearsal before the defence"
+    ],
+    [
+      "PR-3",
+      "Project",
+      "Toolchain differences break the build on the candidate's Windows laptop",
+      0.3,
+      1,
+      "Pinned versions; CI on every push; beginner setup guide; fallback install commands",
+      "Occurred once (pip on Windows), fixed"
+    ],
+    [
+      "PR-4",
+      "Project",
+      "Loss of work through a single failed machine",
+      0.1,
+      5,
+      "GitHub remote; dated update bundles; generated documents rebuilt from source",
+      "Closed"
+    ],
+    [
+      "PD-1",
+      "Product",
+      "Revoked credential accepted at an offline point before the verifier next syncs",
+      0.5,
+      3,
+      "Verifier warns at 7 days and refuses at 30; credential expiry; sync whenever a signal is available; planned delta lists",
+      "Accepted (residual)"
+    ],
+    [
+      "PD-2",
+      "Product",
+      "Issuer signing key stolen, allowing forged identities",
+      0.05,
+      30,
+      "Key only in the Issuer, encrypted at rest; production HSM; key IDs allow rotation and mass re-issue",
+      "Open (production)"
+    ],
+    [
+      "PD-3",
+      "Product",
+      "Impostor uses a paper wallet (L1), checked only by face",
+      0.4,
+      2,
+      "Assurance level recorded per check; L2 preferred; agent training; audit anomaly report",
+      "Accepted (residual)"
+    ],
+    [
+      "PD-4",
+      "Product",
+      "Verifier too slow or incompatible on low-end Android phones",
+      0.3,
+      3,
+      "Measured 4.3 ms per check in the browser library; standard Web Crypto; phone-sized screens tested in the browser; field pilot on target phones",
+      "Open (pilot)"
+    ],
+    [
+      "PD-5",
+      "Product",
+      "Vulnerable or outdated dependencies (development tools; Node 20 end of support in CI)",
+      0.5,
+      1,
+      "pip-audit and npm audit in CI; dependency removed when advisory found; scheduled adaptive upgrades",
+      "Open: monitored"
+    ],
+    [
+      "PD-6",
+      "Product",
+      "Non-compliance with the Nigeria Data Protection Act 2023",
+      0.2,
+      10,
+      "Data minimisation by design; NIN hashed; consent step at enrolment; data protection impact assessment before rollout",
+      "Open (production)"
+    ],
+    [
+      "PD-7",
+      "Product",
+      "Low adoption by agents and farmers (literacy, shared phones, trust)",
+      0.4,
+      5,
+      "Three-tap Verifier flow; Hausa verdicts; paper wallet for feature-phone users; agent training in the rollout plan",
+      "Open (rollout)"
+    ]
   ]
 }

@@ -23,7 +23,7 @@ fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=200)
 x = range(len(dates))
 ax.plot(x, planned, color=BLUE, lw=2, marker="o", ms=5, label="Planned remaining (BAC − PV)")
 ax.plot(range(len(actual)), actual, color=ORANGE, lw=2, marker="o", ms=5, label="Actual remaining (BAC − EV)")
-ax.annotate(f"{actual[-1]} pts left\n(4 Nov)", (len(actual) - 1, actual[-1]), xytext=(8, 10),
+ax.annotate(f"{actual[-1]} pts left\n(8 Nov)", (len(actual) - 1, actual[-1]), xytext=(-70, 18),
             textcoords="offset points", color=INK, fontsize=9)
 ax.annotate("No sprint work\n31 Oct – 2 Nov", (2, 60), xytext=(0, 12), textcoords="offset points",
             ha="center", color=MUTED, fontsize=9)

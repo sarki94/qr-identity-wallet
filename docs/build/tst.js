@@ -21,7 +21,7 @@ const levels = [
 const totalTC = TC.length, totalCases = sum(TC, (t) => t.cases), totalPass = sum(TC, (t) => t.result === "Pass");
 const prop = pick((t) => t.technique.startsWith("Property"));
 
-const doc = new Doc({ code: "QRW-TST-04", title: "Test Plan and Test Report", version: "1.0", date: "November 2026",
+const doc = new Doc({ code: "QRW-TST-04", title: "Test Plan and Test Report", version: "1.1", date: "November 2026",
   related: "QRW-SRS-01 Requirements · QRW-SDD-02 Design · QRW-SEC-03 Security" });
 
 // =====================================================================
@@ -31,7 +31,7 @@ doc.p("This document is both the test plan and the test report for the Offline-F
 doc.h2("Scope");
 doc.p("All three code bases are in scope: the cryptographic core library (qrw_core), the five back-end services (qrw_services) and the web application's verification library and screens. Security testing is summarised here and reported in full in QRW-SEC-03.");
 doc.h2("Summary of Results");
-doc.p(`**${totalTC} test cases** were designed, executing **${totalCases} individual checks** (some cases are parameterised or run several steps). **All ${totalPass} pass.** Statement coverage is 97% for the core library and 97% for the services; the browser verification library is at 90% and the PIN vault at 100%. Every one of the 48 requirements is linked to at least one passing test or a recorded manual verification, and no requirement is uncovered. Automated tests, scans and the candidate's own manual testing found seven real defects during development, all fixed (Section 6).`);
+doc.p(`**${totalTC} test cases** were designed, executing **${totalCases} individual checks** (some cases are parameterised or run several steps). **All ${totalPass} pass.** Statement coverage is 97% for the core library and 97% for the services; the browser verification library is at 90% and the PIN vault at 100%. Every one of the 48 requirements is linked to at least one passing test or a recorded manual verification, and no requirement is uncovered. Automated tests, scans and the candidate's own manual testing found eight real defects during development, all fixed (Section 6).`);
 doc.h2("References");
 doc.references([
   "Beck, K. (2003). *Test-driven development: By example*. Addison-Wesley.",
@@ -71,6 +71,8 @@ doc.table("Test-first evidence in the commit history", ["Commit", "Date", "Step"
   ["36b9f76", "30 Oct 2026", "Refactor", "test(core): cover key storage and validation branches; add CI pipeline"],
   ["916f0ad", "4 Nov 2026", "Red", "test(security): TC-SEC-011/012 for the ZAP finding (red)"],
   ["7c44f43", "4 Nov 2026", "Green", "fix(security): strict CSP on API docs pages; ZAP scan evidence (green)"],
+  ["ea670ef", "8 Nov 2026", "Red", "test(audit): TC-SVC-034/035 rewrite-and-recompute attack on the audit chain (red)"],
+  ["fd429df", "8 Nov 2026", "Green", "feat(audit): sign every audit record hash with a key held outside the database (green)"],
 ], [13, 15, 11, 61]);
 doc.p("Behaviour-driven development (BDD) was considered and not adopted. Its main benefit is a shared, readable specification between developers and non-technical stakeholders; in a solo project that role is already played by the requirements in QRW-SRS-01, which every test names through its requirement tag. Writing Gherkin scenarios as well would have duplicated that specification without adding checks. The two system tests do, however, follow scenario form (given an issued credential, when the agent scans offline, then the verdict is accepted), which captures the main benefit of BDD where it matters.");
 
@@ -108,7 +110,7 @@ doc.p("All 29 functional and 19 non-functional requirements of QRW-SRS-01: enrol
 doc.h2("Features Not Tested, and Why");
 doc.bullets([
   "**Real NIMC integration.** The NIMC interface is not available to students; a mock with fictional records is used (assumption in QRW-SRS-01).",
-  "**Field use on low-end Android phones in Kura.** Planned with npm run phone on the candidate's own phone before the defence; not yet done at the time of writing. Performance was measured in a test environment, with large margins (Section 5.4).",
+  "**Field use in Kura.** Testing was carried out through the web interface on a laptop and in browsers, including phone-sized screens and verification with the agent device offline; a field pilot with agents is recommended (QRW-PRM-05).",
   "**Load from many concurrent users.** Verification runs on the phones, so server load comes only from synchronisation, which is batched; a load test was judged lower value than the security tests for the time available.",
   "**Deferred features** (staff multi-factor authentication, full Hausa translation, agent PIN unlock): not built, so not tested. They are the five requirements marked Partial in the RTM.",
 ]);
@@ -138,7 +140,7 @@ doc.table("Testing schedule", ["Date", "Testing activity"], [
   ["3 Nov 2026", "Service integration and end-to-end tests; browser library tests; Playwright system tests TC-SYS-002 and TC-SYS-003; candidate's manual run of the Guided Demo on his laptop"],
   ["3 Nov 2026", "Security tests, static analysis, dependency audit; performance and capacity tests; generated RTM"],
   ["4 Nov 2026", "OWASP ZAP scan, fix and re-scan; coverage for the browser library; this report"],
-  ["Before 8 Nov 2026", "Field-style test on a real phone over HTTPS (npm run phone)"],
+  ["8 Nov 2026", "Independent review: signed audit records test-first (TC-SVC-034 to 036); list-age unit test (TC-WEB-017); browser system tests re-run"],
 ], [20, 80]);
 doc.h2("Risks and Contingencies");
 doc.table("Testing risks", ["Risk", "Contingency"], [
@@ -150,7 +152,7 @@ doc.table("Testing risks", ["Risk", "Contingency"], [
 
 // =====================================================================
 doc.h1("Test Cases");
-doc.p(`Each test case has a unique identifier whose prefix shows its suite: TC-CORE (core library), TC-SVC (services), TC-SEC (security), TC-WEB (browser library) and TC-SYS (system). The full code of every case is in the repository, in the file named in the RTM. Tables ${doc.section}.1 to ${doc.section}.5 list every case with the requirements it verifies and its result on 4 November 2026.`);
+doc.p(`Each test case has a unique identifier whose prefix shows its suite: TC-CORE (core library), TC-SVC (services), TC-SEC (security), TC-WEB (browser library) and TC-SYS (system). The full code of every case is in the repository, in the file named in the RTM. Tables ${doc.section}.1 to ${doc.section}.5 list every case with the requirements it verifies and its result on 8 November 2026.`);
 const groups = [
   ["Core library unit and performance test cases", (t) => t.suite === "core"],
   ["Service integration, performance and end-to-end test cases", (t) => t.suite === "services" && t.level !== "Security"],
@@ -169,7 +171,7 @@ doc.p("The two browser system tests are scenario tests. TC-SYS-002 plays a full 
 // =====================================================================
 doc.h1("Test Results");
 doc.h2("Results by Level");
-doc.p(`Table ${doc.peekTable()} summarises the results of the run on 4 November 2026.`);
+doc.p(`Table ${doc.peekTable()} summarises the results of the run on 8 November 2026.`);
 doc.table("Results by test level", ["Level", "Test cases", "Checks run", "Passed", "Failed"], levels.map(([n, f]) => {
   const t = pick(f); return [n, String(t.length), String(sum(t, (x) => x.cases)), String(sum(t, (x) => x.result === "Pass")), String(sum(t, (x) => x.result !== "Pass"))];
 }).concat([["**Total**", `**${totalTC}**`, `**${totalCases}**`, `**${totalPass}**`, `**${totalTC - totalPass}**`]]), [40, 15, 15, 15, 15]);
@@ -185,11 +187,11 @@ doc.table("Statement coverage by module", ["Code base", "Module", "Statements", 
   ["", "**Total**", "**290**", "**97%**"],
   ["Services", "shared (app, config, db, security)", "124", "98%"],
   ["", "issuer", "180", "97%"],
-  ["", "audit", "96", "97%"],
+  ["", "audit", "129", "97%"],
   ["", "trust", "64", "97%"],
   ["", "auth", "116", "96%"],
-  ["", "nimc, secrets", "40", "90%"],
-  ["", "**Total**", "**620**", "**97%**"],
+  ["", "nimc, secrets", "40", "93%"],
+  ["", "**Total**", "**653**", "**97%**"],
   ["Browser library", "vault.ts (PIN vault)", "", "100%"],
   ["", "qrw.ts (verification)", "", "90%"],
   ["", "api.ts, store.ts, router.tsx", "", "0% (covered by system tests)"],
@@ -241,16 +243,17 @@ doc.table("Defect log", ["ID", "Found by", "Defect", "Severity", "Fix and regres
   ["DEF-05", "OWASP ZAP re-scan", "First fix still allowed inline styles", "Medium", "Inline styles removed; checked in a browser (7c44f43). TC-SEC-011"],
   ["DEF-06", "Bandit", "A developer tool ran subprocess with shell=True", "Low", "Command resolved without a shell (7264652). Bandit in CI"],
   ["DEF-07", "Candidate's walkthrough (3 Nov)", "Pasting the wrong kind of code into the Verifier gave an unhelpful error", "Low", "Code type recognised and explained (4888af3). TC-WEB-011"],
+  ["DEF-08", "Independent review (8 Nov)", "The audit chain was plain SHA-256: someone with database access could edit a record and recompute every hash after it", "Medium", "Each record hash signed with an Audit key held outside the database (fd429df). TC-SVC-034 to 036"],
 ], [9, 18, 33, 10, 30], { size: 17 });
 doc.p("The design also changed as a result of reviewing it before code existed: checking the issuance sequence diagram showed that a re-issue had to revoke the old credential in the same transaction as it saved the new one (decision D8), which is now verified by TC-SVC-023.");
 
 // =====================================================================
 doc.h1("Evaluation and Conclusion");
 doc.h2("Evaluation");
-doc.p("The evidence supports the claim that the prototype meets its requirements, with the stated partial exceptions. The strongest evidence is for the parts that matter most: the verification logic is tested by examples, by properties over generated inputs, and against an independent implementation in another language, and the whole flow is tested offline in real browsers. The tests were not written after the fact to confirm working code; the core was written test-first, and the tests, scans and the candidate's own manual testing found seven real defects, each now guarded by a regression test.");
+doc.p("The evidence supports the claim that the prototype meets its requirements, with the stated partial exceptions. The strongest evidence is for the parts that matter most: the verification logic is tested by examples, by properties over generated inputs, and against an independent implementation in another language, and the whole flow is tested offline in real browsers. The tests were not written after the fact to confirm working code; the core was written test-first, and the tests, scans and the candidate's own manual testing found eight real defects, each now guarded by a regression test.");
 doc.h2("Limitations");
 doc.bullets([
-  "No field test on a low-end Android phone in Kura has been done yet; performance figures come from a test machine.",
+  "Testing was done through the web interface on a laptop and in browsers; performance figures come from a test machine, not a field trial in Kura.",
   "The Playwright system tests are run by hand, not in CI, because they need the services and a built web app running together.",
   "There is no load test of many simultaneous synchronisations.",
   "Usability was checked by inspection and demonstration, not by testing with farmers or agents.",
@@ -258,4 +261,4 @@ doc.bullets([
 doc.h2("Conclusion");
 doc.p(`${totalTC} test cases at five levels, all passing, with 97% statement coverage of the Python code, full requirement traceability, continuous integration on every push and documented security scans give a high level of confidence in the prototype for an examination system. The most valuable next step in testing is a field trial on the phones and network conditions the system is designed for.`);
 
-doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete test plan and test report"]]).then(() => console.log("written", process.argv[2]));
+doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete test plan and test report"], ["1.1", "8 Nov 2026", "Signed audit records and list-age tests; results re-run on 8 November"]]).then(() => console.log("written", process.argv[2]));
