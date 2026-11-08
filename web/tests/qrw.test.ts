@@ -87,3 +87,20 @@ describe("TC-WEB: scanner input handling", () => {
     }
   });
 });
+
+import { LIST_REFUSE_DAYS, LIST_WARN_DAYS, listFreshness } from "../src/lib/qrw";
+
+describe("revocation list age rules", () => {
+  const DAY = 86_400_000, now = Date.UTC(2026, 10, 8);
+  it("TC-WEB-017 [FR-21] list age: fresh up to 7 days, warn after 7, refuse after 30 and when never synced", () => {
+    expect(LIST_WARN_DAYS).toBe(7);
+    expect(LIST_REFUSE_DAYS).toBe(30);
+    expect(listFreshness(now, now).status).toBe("fresh");
+    expect(listFreshness(now - 7 * DAY, now).status).toBe("fresh");
+    expect(listFreshness(now - 7 * DAY - 60_000, now).status).toBe("warn");
+    expect(listFreshness(now - 30 * DAY, now).status).toBe("warn");
+    expect(listFreshness(now - 30 * DAY - 60_000, now).status).toBe("refuse");
+    expect(listFreshness(undefined, now).status).toBe("refuse");
+    expect(listFreshness(now - 3 * DAY, now).ageDays).toBeCloseTo(3);
+  });
+});
