@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Session } from "../lib/api";
 import {
+  LIST_REFUSE_DAYS, LIST_WARN_DAYS, listFreshness,
   b64urlDecode, challengeQr, codeKind, decodeQr, InvalidQRError, KeySet, newChallenge, packIds, parseTagged, Payload,
   todayIso, unpackIds, verifyChallengeResponse, verifyCredential, verifyRevocationList,
 } from "../lib/qrw";
@@ -14,8 +15,8 @@ import { Login } from "../components/Login";
 import { QrCode } from "../components/QrCode";
 import { Scanner } from "../components/Scanner";
 
-const SOFT_DAYS = 7;   // FR-21: warn
-const HARD_DAYS = 30;  // FR-21: refuse acceptances
+const SOFT_DAYS = LIST_WARN_DAYS;    // FR-21: warn
+const HARD_DAYS = LIST_REFUSE_DAYS;  // FR-21: refuse acceptances
 const CHALLENGE_SECONDS = 60;
 const DAY = 86_400_000;
 
@@ -79,7 +80,8 @@ export default function Verifier() {
   }, []);
 
   const now = Date.now() + clockOffsetDays * DAY;
-  const listAgeDays = cache.list ? (now - cache.list.fetchedAt) / DAY : Infinity;
+  const freshness = listFreshness(cache.list?.fetchedAt, now);
+  const listAgeDays = freshness.ageDays;
   const keySet: KeySet = Object.fromEntries(Object.entries(cache.keys).map(([k, v]) => [k, b64urlDecode(v)]));
 
   async function sync() {
@@ -127,7 +129,7 @@ export default function Verifier() {
   const onCredential = useCallback((text: string) => {
     setMsg(null);
     if (!cache.list) return finish(false, null, "NO_SYNC", null, "unreadable");
-    if (listAgeDays > HARD_DAYS) return finish(false, null, "LIST_TOO_OLD", null, "unreadable");
+    if (freshness.status === "refuse") return finish(false, null, "LIST_TOO_OLD", null, "unreadable");
     const kind = codeKind(text);
     if (kind !== "credential" && kind !== "unknown") {
       setMsg({ kind: "warn", text: REASON_TEXT[`WRONG_CODE_${kind.toUpperCase()}`] });

@@ -224,3 +224,15 @@ export function unpackIds(packed: string): string[] {
   if (!Array.isArray(ids) || !ids.every((i) => typeof i === "string")) throw new Error("bad packed list");
   return ids;
 }
+
+// FR-21: how stale a cached revocation list may be before the verifier warns, then refuses.
+export const LIST_WARN_DAYS = 7;
+export const LIST_REFUSE_DAYS = 30;
+export type Freshness = { ageDays: number; status: "fresh" | "warn" | "refuse" };
+
+/** Age of the cached list and what the verifier must do; never synced counts as too old (fail securely). */
+export function listFreshness(fetchedAt: number | undefined, now: number): Freshness {
+  if (fetchedAt === undefined) return { ageDays: Infinity, status: "refuse" };
+  const ageDays = (now - fetchedAt) / 86_400_000;
+  return { ageDays, status: ageDays > LIST_REFUSE_DAYS ? "refuse" : ageDays > LIST_WARN_DAYS ? "warn" : "fresh" };
+}
