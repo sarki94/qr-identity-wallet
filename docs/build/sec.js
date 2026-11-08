@@ -19,7 +19,7 @@ function mdTable(heading) {
 }
 const stride = mdTable("## 2. STRIDE threat model").map((r) => [r[0].replace(/\*\*(.)\*\*/, "$1"), r[1], r[2], r[3]]);
 
-const doc = new Doc({ code: "QRW-SEC-03", title: "Security Engineering Report", version: "1.0", date: "November 2026",
+const doc = new Doc({ code: "QRW-SEC-03", title: "Security Engineering Report", version: "1.1", date: "November 2026",
   related: "QRW-SRS-01 Requirements · QRW-SDD-02 Design · QRW-TST-04 Test Plan & Report" });
 
 // =====================================================================
@@ -75,7 +75,7 @@ doc.table("Trust boundaries", ["ID", "Between", "Crossing protected by"], mdTabl
 // =====================================================================
 doc.h1("STRIDE Threat Model");
 doc.p("The threat model uses the four-column STRIDE format given in the course: threat category, security property violated, definition and mitigation. The definition states the concrete threat in this system, numbered by category (S1, T1 and so on); the mitigation names the controls and, in italics, the test cases that verify them.");
-doc.p(`Nineteen threats were identified across the six categories (Table ${doc.peekTable()}). Every threat has at least one implemented mitigation verified by at least one test; for R2 a residual part remains, noted in the table and in Section 8.`);
+doc.p(`Twenty threats were identified across the six categories (Table ${doc.peekTable()}). Every threat has at least one implemented mitigation verified by at least one test; for R2 a residual part remains, noted in the table and in Section 8.`);
 doc.table("STRIDE threat model", ["Threat category", "Security property violated", "Definition (threat in this system)", "Mitigation (and verifying tests)"], stride, [12, 17, 29, 42], { size: 17 });
 doc.p("The mitigations correspond to those given in the course for each category: digital signatures and HMACs for tampering, signed audit logs for repudiation, encryption and access control for information disclosure, and rate limiting and quotas for denial of service. Multi-factor authentication for staff and mutual TLS between services were considered and deferred; Section 8 explains why and what replaces them in the prototype.");
 
@@ -117,8 +117,8 @@ doc.table("Role permissions", ["Operation", "Officer", "Agent", "Admin", "Audito
 doc.h2("Cryptographic Choices");
 doc.p(`The algorithms and parameters are listed in Table ${doc.peekTable()}. Only standard, widely reviewed primitives are used, from maintained libraries (Python cryptography and PyJWT; @noble/ed25519 and the browser's Web Crypto API).`);
 doc.table("Cryptographic algorithms and parameters", ["Algorithm", "Used for", "Parameters", "Standard"], [
-  ["Ed25519", "Credentials, revocation lists, challenge answers, staff tokens", "Strict verification in the browser (no ZIP-215 leniency)", "RFC 8032"],
-  ["SHA-256", "Audit hash chain; issuer key IDs", "256-bit output", "FIPS 180-4"],
+  ["Ed25519", "Credentials, revocation lists, challenge answers, staff tokens, audit record seals", "Strict verification in the browser (no ZIP-215 leniency)", "RFC 8032"],
+  ["SHA-256", "Audit hash chain (each hash then signed); issuer key IDs", "256-bit output", "FIPS 180-4"],
   ["HMAC-SHA256", "Keyed hash of the NIN", "256-bit secret pepper", "RFC 2104"],
   ["scrypt", "Staff passwords", "N = 2^14, r = 8, p = 1; 128-bit salt per user", "RFC 7914"],
   ["PBKDF2-SHA256 + AES-256-GCM", "Wallet PIN vault", "210,000 iterations; 128-bit salt; 96-bit IV", "RFC 8018; NIST SP 800-38D"],
@@ -178,7 +178,8 @@ doc.table("Residual risks", ["Residual risk", "Current control", "Recommendation
   ["Revocation lag at offline points: a revoked credential can pass until the verifier next synchronises", "Seven-day warning and 30-day refusal on list age; credential expiry", "Delta lists that are small enough to sync over SMS or USSD"],
   ["Paper wallets (L1) rely on a human face check only", "Level recorded on every acceptance; auditors can monitor L1 use", "Prefer L2 wherever a smartphone is available; train agents"],
   ["Phone cache tampering by someone with an unlocked agent phone", "List-age rules; device screen lock", "Cache the signed list and re-verify it on every load"],
-  ["Offline PIN guessing on a seized phone", "PBKDF2 slows guessing; five-attempt lock; revoke on reported loss", "Use the phone's hardware-backed key store where available"],
+  ["Offline PIN guessing on a seized phone: the five-attempt lock does not protect data copied off the phone", "PBKDF2 slows guessing; five-attempt lock in the app; revoke on reported loss", "Use the phone's hardware-backed key store where available"],
+  ["Stolen agent phone used within its 7-day token lifetime (S4)", "Token limited to one role and point; checks recorded and anomalies flagged; account can be disabled", "Agent PIN unlock (FR-14) and a token deny-list checked at sync"],
   ["Signing key compromise", "Key only in the Issuer, encrypted at rest", "Hardware security module; key rotation through key IDs"],
   ["Repudiation by a farmer (R2)", "Signed answer is verified but not stored", "Store the signed answer in the audit record"],
   ["Staff accounts protected by password only", "scrypt, lockout, rate limit, short token lifetime", "Add multi-factor authentication (deferred for time)"],
@@ -186,4 +187,4 @@ doc.table("Residual risks", ["Residual risk", "Current control", "Recommendation
 ], [32, 34, 34]);
 doc.p("Two controls named in the course were consciously deferred. Multi-factor authentication for staff was cut from the schedule recovery plan because the staff threat is already bounded by lockout, rate limiting and short-lived tokens, while the offline holder threat, which has no such bounds, received the effort instead. Mutual TLS was deferred because every service runs on one host in the prototype; it is the first change needed for a multi-host deployment.");
 
-doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete security engineering report, including OWASP ZAP scan"]]).then(() => console.log("written", process.argv[2]));
+doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete security engineering report, including OWASP ZAP scan"], ["1.1", "8 Nov 2026", "Signed audit records (T3); stolen agent phone threat (S4)"]]).then(() => console.log("written", process.argv[2]));

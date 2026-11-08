@@ -6,7 +6,7 @@ const SHOTS = path.join(__dirname, "..", "screenshots");
 const req = (id) => R.reqs.find((r) => r.id === id);
 const rows = (ids) => ids.map((id) => { const r = req(id); return [r.id, r.text, r.priority, r.status]; });
 
-const doc = new Doc({ code: "QRW-SRS-01", title: "Software Requirements Specification", version: "1.0", date: "November 2026",
+const doc = new Doc({ code: "QRW-SRS-01", title: "Software Requirements Specification", version: "1.1", date: "November 2026",
   related: "QRW-SDD-02 Design · QRW-SEC-03 Security · QRW-TST-04 Test Plan & Report · QRW-PRM-05 Project, Risk & Maintenance · QRW-USR-06 User Manual · QRW-TR-07 Technical Report" });
 
 // =====================================================================
@@ -101,7 +101,7 @@ doc.p("Section 2 describes the product's context, functions, users, environment,
 // =====================================================================
 doc.h1("General Overview");
 doc.h2("Product Perspective");
-doc.p(`The system is a new, self-contained product built from four small back-end services and one installable web application, as shown in Figure ${doc.peekFig()}. The Issuer, Trust & Revocation, Audit & Sync and Auth services run on a server; the Issuer Portal, Citizen Wallet and Verifier are screens of a single Progressive Web App that runs on laptops and Android phones. The wallet and the verifier communicate with each other only through QR codes, which is what allows verification without a network.`);
+doc.p(`The system is a new, self-contained product built from four core back-end services, a mock NIMC service (five services in all) and one installable web application, as shown in Figure ${doc.peekFig()}. The Issuer, Trust & Revocation, Audit & Sync and Auth services run on a server; the Issuer Portal, Citizen Wallet and Verifier are screens of a single Progressive Web App that runs on laptops and Android phones. The wallet and the verifier communicate with each other only through QR codes, which is what allows verification without a network.`);
 doc.figure("System context and service architecture (solid arrows: synchronous calls; dashed arrows: asynchronous or offline exchanges)", `${UML}/AR1.png`, 16);
 doc.h2("Product Functions");
 doc.p("At a high level, the system shall:");
@@ -188,8 +188,8 @@ doc.figure("State machine of the credential lifecycle", `${UML}/SM2.png`, 8);
 doc.h2("Non-Functional Requirements");
 doc.p("The non-functional requirements are grouped under the four categories used in the course template. Where a requirement is measurable, the value measured by the automated tests on 3 November 2026 is given.");
 const measured = {
-  "NFR-P1": "0.4 ms (Python), 5.2 ms (browser library) per full check",
-  "NFR-P2": "≈ 10 ms per issuance",
+  "NFR-P1": "0.32 ms (Python), 4.3 ms (browser library) per full check",
+  "NFR-P2": "8 ms per issuance",
   "NFR-C1": "Within 1,800 bytes with a 1 KB photo",
   "NFR-C2": "3.4 KB for five profiles",
   "NFR-C3": "0.94 MB in transit, 1.41 MB cached",
@@ -313,5 +313,5 @@ const rtm = fs.readFileSync(path.join(__dirname, "..", "rtm.csv"), "utf8").trim(
 doc.table("Requirements Traceability Matrix", ["Requirement ID", "UML / SysML artefact", "Code module", "Test case ID (result)"],
   rtm.map((c) => [`${c[0]} (${c[1]}, ${c[2]})`, c[4], c[5], c[6]]), [13, 25, 25, 37], { size: 16 });
 
-doc.save(process.argv[2], [["0.1", "22 Oct 2026", "Requirements draft and elicitation"], ["0.2", "25 Oct 2026", "Localised to Kura LGA; two assurance levels (D2a)"], ["1.0", "4 Nov 2026", "Complete SRS with measured NFRs and generated RTM"]])
+doc.save(process.argv[2], [["0.1", "22 Oct 2026", "Requirements draft and elicitation"], ["0.2", "25 Oct 2026", "Localised to Kura LGA; two assurance levels (D2a)"], ["1.0", "4 Nov 2026", "Complete SRS with measured NFRs and generated RTM"], ["1.1", "8 Nov 2026", "Requirements stated as \"The system shall\"; signed audit records; FR-21 automated test; consistent measured figures"]])
   .then(() => console.log("written", process.argv[2]));

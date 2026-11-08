@@ -77,3 +77,39 @@ def test_tc_svc_034_rewriting_a_record_and_recomputing_the_chain_is_detected(sys
 def test_tc_svc_035_audit_public_key_is_published_for_independent_checks(system):
     r = system["audit"].get("/audit-key")
     assert r.status_code == 200 and len(r.json()["public_key"]) >= 43
+
+
+@pytest.mark.req("NFR-S6")
+def test_tc_svc_036_existing_unsigned_audit_log_is_upgraded_and_sealed(tmp_path):
+    """Installations from before records were signed: the key is created and an intact chain is sealed once."""
+    from fastapi.testclient import TestClient
+    from qrw_core.audit import GENESIS, record_hash
+    from qrw_services.audit.app import create_app
+    from qrw_services.auth.app import create_app as auth_app
+    from qrw_services.secrets import init_secrets
+    from qrw_services.shared.config import Settings
+    s = Settings(secrets_dir=tmp_path / "secrets", data_dir=tmp_path / "data", key_password=b"test-password")
+    init_secrets(s)
+    for f in ("audit_private.pem", "audit_public.b64"):
+        (s.secrets_dir / f).unlink()
+    s.data_dir.mkdir()
+    with sqlite3.connect(s.data_dir / "audit.db") as conn:
+        conn.execute("CREATE TABLE records (seq INTEGER PRIMARY KEY AUTOINCREMENT, record_id VARCHAR(64) UNIQUE, "
+                     "credential_id VARCHAR(40), result VARCHAR(10), level VARCHAR(2), reason VARCHAR(40), "
+                     "point_id VARCHAR(32), agent VARCHAR(64), verified_at VARCHAR(40), received_at DATETIME, "
+                     "prev_hash VARCHAR(64), hash VARCHAR(64))")
+        prev = GENESIS
+        for i in range(3):
+            f = {"record_id": uuid.uuid4().hex, "credential_id": "cred-1", "result": "accepted", "level": "L2",
+                 "reason": None, "point_id": "KURA-01", "agent": "agent1", "verified_at": f"2026-11-03T10:00:0{i}"}
+            h = record_hash(f, prev)
+            conn.execute("INSERT INTO records (record_id, credential_id, result, level, reason, point_id, agent, "
+                         "verified_at, received_at, prev_hash, hash) VALUES (?,?,?,?,?,?,?,?,datetime('now'),?,?)",
+                         (*f.values(), prev, h))
+            prev = h
+    with TestClient(auth_app(s)) as auth, TestClient(create_app(s)) as audit:
+        token = auth.post("/token", data={"username": "auditor1", "password": "Auditor#2026!"}).json()
+        report = audit.get("/records/verify-chain",
+                           headers={"Authorization": f"Bearer {token['access_token']}"}).json()
+    assert report["records"] == 3 and report["intact"] is True
+    assert (s.secrets_dir / "audit_private.pem").exists()

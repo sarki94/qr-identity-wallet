@@ -42,7 +42,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.031
+  "time": 0.028
  },
  {
   "id": "TC-CORE-004",
@@ -72,7 +72,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.032
+  "time": 0.025
  },
  {
   "id": "TC-CORE-010",
@@ -118,7 +118,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-013",
@@ -150,7 +150,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.102
+  "time": 0.082
  },
  {
   "id": "TC-CORE-015",
@@ -165,7 +165,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.002
+  "time": 0.001
  },
  {
   "id": "TC-CORE-016",
@@ -210,7 +210,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-019",
@@ -225,7 +225,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.054
+  "time": 0.051
  },
  {
   "id": "TC-CORE-020",
@@ -241,7 +241,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.093
+  "time": 0.083
  },
  {
   "id": "TC-CORE-021",
@@ -287,7 +287,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.037
+  "time": 0.031
  },
  {
   "id": "TC-CORE-024",
@@ -302,7 +302,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.019
+  "time": 0.016
  },
  {
   "id": "TC-CORE-025",
@@ -380,7 +380,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-034",
@@ -410,7 +410,7 @@
   ],
   "cases": 4,
   "result": "Pass",
-  "time": 0.003
+  "time": 0.001
  },
  {
   "id": "TC-CORE-040",
@@ -457,7 +457,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-050",
@@ -473,7 +473,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-051",
@@ -489,7 +489,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.085
+  "time": 0.072
  },
  {
   "id": "TC-CORE-052",
@@ -553,7 +553,7 @@
   ],
   "cases": 5,
   "result": "Pass",
-  "time": 0.003
+  "time": 0.001
  },
  {
   "id": "TC-CORE-062",
@@ -583,7 +583,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.0
  },
  {
   "id": "TC-CORE-070",
@@ -598,7 +598,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.073
+  "time": 0.066
  },
  {
   "id": "TC-CORE-071",
@@ -614,7 +614,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.258
+  "time": 0.21
  },
  {
   "id": "TC-CORE-072",
@@ -629,7 +629,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.033
+  "time": 0.018
  },
  {
   "id": "TC-SEC-001",
@@ -645,7 +645,7 @@
   ],
   "cases": 6,
   "result": "Pass",
-  "time": 1.724
+  "time": 1.559
  },
  {
   "id": "TC-SEC-002",
@@ -661,7 +661,7 @@
   ],
   "cases": 8,
   "result": "Pass",
-  "time": 4.367
+  "time": 3.931
  },
  {
   "id": "TC-SEC-003",
@@ -676,7 +676,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.553
+  "time": 0.453
  },
  {
   "id": "TC-SEC-004",
@@ -692,7 +692,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.312
+  "time": 0.271
  },
  {
   "id": "TC-SEC-005",
@@ -708,7 +708,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.312
+  "time": 0.294
  },
  {
   "id": "TC-SEC-006",
@@ -724,7 +724,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.543
+  "time": 0.616
  },
  {
   "id": "TC-SEC-007",
@@ -740,7 +740,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.56
+  "time": 0.455
  },
  {
   "id": "TC-SEC-008",
@@ -755,7 +755,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.432
+  "time": 0.295
  },
  {
   "id": "TC-SEC-009",
@@ -770,7 +770,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.304
+  "time": 0.253
  },
  {
   "id": "TC-SEC-010",
@@ -785,7 +785,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.532
+  "time": 0.442
  },
  {
   "id": "TC-SEC-011",
@@ -800,7 +800,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.286
+  "time": 0.281
  },
  {
   "id": "TC-SEC-012",
@@ -815,7 +815,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.02
+  "time": 0.023
  },
  {
   "id": "TC-SVC-001",
@@ -830,7 +830,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.309
+  "time": 0.285
  },
  {
   "id": "TC-SVC-010",
@@ -845,7 +845,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.34
+  "time": 0.312
  },
  {
   "id": "TC-SVC-011",
@@ -860,7 +860,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.375
+  "time": 0.368
  },
  {
   "id": "TC-SVC-012",
@@ -876,7 +876,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.825
+  "time": 0.762
  },
  {
   "id": "TC-SVC-013",
@@ -892,7 +892,7 @@
   ],
   "cases": 3,
   "result": "Pass",
-  "time": 1.03
+  "time": 0.844
  },
  {
   "id": "TC-SVC-014",
@@ -907,7 +907,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.575
+  "time": 0.507
  },
  {
   "id": "TC-SVC-015",
@@ -922,7 +922,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.678
+  "time": 0.613
  },
  {
   "id": "TC-SVC-016",
@@ -937,7 +937,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.353
+  "time": 0.342
  },
  {
   "id": "TC-SVC-020",
@@ -953,7 +953,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.56
+  "time": 0.423
  },
  {
   "id": "TC-SVC-021",
@@ -971,7 +971,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.636
+  "time": 0.491
  },
  {
   "id": "TC-SVC-022",
@@ -987,7 +987,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.616
+  "time": 0.451
  },
  {
   "id": "TC-SVC-023",
@@ -1003,7 +1003,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.599
+  "time": 0.499
  },
  {
   "id": "TC-SVC-024",
@@ -1020,7 +1020,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.575
+  "time": 0.525
  },
  {
   "id": "TC-SVC-025",
@@ -1036,7 +1036,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.606
+  "time": 0.557
  },
  {
   "id": "TC-SVC-026",
@@ -1052,7 +1052,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.588
+  "time": 0.489
  },
  {
   "id": "TC-SVC-030",
@@ -1068,7 +1068,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.625
+  "time": 0.524
  },
  {
   "id": "TC-SVC-031",
@@ -1084,7 +1084,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.552
+  "time": 0.502
  },
  {
   "id": "TC-SVC-032",
@@ -1099,7 +1099,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.54
+  "time": 0.509
  },
  {
   "id": "TC-SVC-033",
@@ -1114,7 +1114,53 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.587
+  "time": 0.496
+ },
+ {
+  "id": "TC-SVC-034",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Rewriting a record and recomputing the chain is detected",
+  "note": "An insider with database access edits a record and recomputes every hash after it.\n\nThe plain hash chain would look intact; the Audit service's signature on each record\nhash (key outside the database) exposes the rewrite.",
+  "reqs": [
+   "FR-25",
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.464
+ },
+ {
+  "id": "TC-SVC-035",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Audit public key is published for independent checks",
+  "note": "",
+  "reqs": [
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.267
+ },
+ {
+  "id": "TC-SVC-036",
+  "suite": "services",
+  "file": "services/tests/test_audit_service.py",
+  "level": "Integration",
+  "technique": "API black-box",
+  "title": "Existing unsigned audit log is upgraded and sealed",
+  "note": "Installations from before records were signed: the key is created and an intact chain is sealed once.",
+  "reqs": [
+   "NFR-S6"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.239
  },
  {
   "id": "TC-SVC-040",
@@ -1130,7 +1176,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.554
+  "time": 0.495
  },
  {
   "id": "TC-SVC-041",
@@ -1146,7 +1192,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 1.398
+  "time": 1.611
  },
  {
   "id": "TC-SVC-042",
@@ -1162,7 +1208,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.402
+  "time": 0.384
  },
  {
   "id": "TC-SYS-001",
@@ -1187,7 +1233,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.564
+  "time": 0.567
  },
  {
   "id": "TC-WEB-001",
@@ -1201,7 +1247,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.001
+  "time": 0.002
  },
  {
   "id": "TC-WEB-002",
@@ -1215,7 +1261,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.044
+  "time": 0.035
  },
  {
   "id": "TC-WEB-003",
@@ -1244,7 +1290,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.008
+  "time": 0.015
  },
  {
   "id": "TC-WEB-005",
@@ -1273,7 +1319,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.007
+  "time": 0.008
  },
  {
   "id": "TC-WEB-007",
@@ -1287,7 +1333,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.007
+  "time": 0.006
  },
  {
   "id": "TC-WEB-008",
@@ -1358,7 +1404,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.006
+  "time": 0.007
  },
  {
   "id": "TC-WEB-013",
@@ -1372,7 +1418,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.43
+  "time": 0.413
  },
  {
   "id": "TC-WEB-014",
@@ -1387,7 +1433,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.107
+  "time": 0.111
  },
  {
   "id": "TC-WEB-015",
@@ -1402,7 +1448,7 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 0.179
+  "time": 0.149
  },
  {
   "id": "TC-WEB-016",
@@ -1416,7 +1462,21 @@
   ],
   "cases": 1,
   "result": "Pass",
-  "time": 1.059
+  "time": 0.93
+ },
+ {
+  "id": "TC-WEB-017",
+  "suite": "web",
+  "file": "tests/qrw.test.ts",
+  "level": "Unit (browser library)",
+  "technique": "Cross-implementation vectors",
+  "title": "List age: fresh up to 7 days, warn after 7, refuse after 30 and when never synced",
+  "reqs": [
+   "FR-21"
+  ],
+  "cases": 1,
+  "result": "Pass",
+  "time": 0.0
  },
  {
   "id": "TC-SYS-002",

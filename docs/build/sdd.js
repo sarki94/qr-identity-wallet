@@ -2,7 +2,7 @@ const path = require("path");
 const { Doc } = require("./lib");
 const UML = process.env.UML_PNG;
 
-const doc = new Doc({ code: "QRW-SDD-02", title: "Software Design Document", version: "1.0", date: "November 2026",
+const doc = new Doc({ code: "QRW-SDD-02", title: "Software Design Document", version: "1.1", date: "November 2026",
   related: "QRW-SRS-01 Requirements · QRW-SEC-03 Security · QRW-TST-04 Test Plan & Report" });
 
 // =====================================================================
@@ -10,7 +10,7 @@ doc.h1("Introduction");
 doc.h2("Purpose");
 doc.p("This Software Design Document (SDD) describes how the Offline-First Cryptographic QR Identity Wallet is built to satisfy the requirements in QRW-SRS-01. It records the architectural style and the reasons for choosing it, the components and their responsibilities, the data model, the communication patterns between components, the detailed design of the security-critical algorithms, and the provisions for scalability and resilience. Its structure follows the viewpoint approach of IEEE 1016, the standard for software design descriptions (IEEE, 2009).");
 doc.h2("Scope");
-doc.p("The design covers the cryptographic core library, the four back-end services and the mock NIMC service, and the Progressive Web App with its Verifier, Wallet, Issuer Portal and Audit screens. Security design is summarised in Section 8 and treated fully in QRW-SEC-03.");
+doc.p("The design covers the cryptographic core library, the four core back-end services and the mock NIMC service (five services in all), and the Progressive Web App with its Verifier, Wallet, Issuer Portal and Audit screens. Security design is summarised in Section 8 and treated fully in QRW-SEC-03.");
 doc.h2("Design Stakeholders and Concerns");
 doc.p(`Table ${doc.peekTable()} lists who reads this design and what each needs it to answer.`);
 doc.table("Design stakeholders and concerns", ["Stakeholder", "Concern", "Addressed in"], [
@@ -42,7 +42,7 @@ doc.h2("Design Decisions");
 doc.p(`The main decisions, with their rationale, are summarised in Table ${doc.peekTable()}. The full log with defence notes is kept in the project repository.`);
 doc.table("Key design decisions", ["ID", "Decision", "Rationale"], [
   ["D2a", "Two assurance levels on one credential format: L2 smartphone wallet, L1 paper wallet", "Elicitation found shared phones and feature phones (F2, F3); one format keeps one verifier code path."],
-  ["D3", "Four services: Auth, Issuer, Trust & Revocation, Audit & Sync, plus a mock NIMC", "Split on trust and availability boundaries, not on screens."],
+  ["D3", "Five services: Auth, Issuer, Trust & Revocation and Audit & Sync, plus a mock NIMC", "Split on trust and availability boundaries, not on screens."],
   ["D4", "FastAPI services; one React PWA for every screen", "Reuses the developer's existing stack; a PWA runs offline and installs on phones."],
   ["D6", "No proxy or delegated presentation", "Programme policy observed in Kura (F1)."],
   ["D8", "Atomic re-issue in one database transaction", "A farmer never has two active credentials, nor none."],
@@ -72,7 +72,7 @@ doc.table("Component responsibilities", ["Component", "Responsibility", "Owns da
   ["Auth (8001)", "Staff login, password hashing (scrypt), lockout, EdDSA tokens, staff administration", "auth.db: users", "Auth private key"],
   ["Issuer (8002)", "NIMC look-up, enrolment, credential signing, atomic re-issue, revocation, signing and publishing the revocation list", "issuer.db: farmers, credentials, revocation_state", "Issuer signing key; NIN pepper; service key"],
   ["Trust & Revocation (8003)", "Publishes issuer public keys and the latest signed revocation list; verifies pushed lists and refuses rollback", "trust.db: published_list", "Service key only"],
-  ["Audit & Sync (8004)", "Receives queued verification records, chains them by hash, verifies the chain, flags anomalies", "audit.db: records", "None"],
+  ["Audit & Sync (8004)", "Receives queued verification records, chains them by hash and signs each hash, verifies the chain, flags anomalies", "audit.db: records", "Audit signing key"],
   ["Mock NIMC (8005)", "Returns fictional NIN records (stand-in for NIMC)", "Bundled JSON", "None"],
   ["Web app (PWA)", "Verifier, Wallet, Issuer Portal, Audit and Guided Demo screens; offline verification in the browser", "Browser storage on each device", "Wallet: PIN-sealed device keys"],
   ["qrw_core (library)", "Pure functions: signing, verification, encoding, challenge–response, revocation list, hash chain", "None", "None"],
@@ -110,7 +110,7 @@ doc.h1("Data Design");
 doc.h2("Data Model");
 doc.p(`Figure ${doc.peekFig()} shows the entity–relationship diagram. Each service owns its own database; relationships that cross a service boundary are logical (by identifier), never foreign keys, which keeps the services independently deployable.`);
 doc.figure("Entity–relationship diagram, one database per service", `${UML}/ERD.png`, 15.5);
-doc.p("Three integrity rules are enforced in the Issuer: a credential is created only for an enrolled farmer (foreign key); at most one credential per farmer is Active (enforced in the issuing transaction); and an L2 credential carries a valid 32-byte holder public key (validated on input). The audit table enforces append-only integrity by hash chaining rather than by database constraints, so that tampering by someone with database access is still detectable.");
+doc.p("Three integrity rules are enforced in the Issuer: a credential is created only for an enrolled farmer (foreign key); at most one credential per farmer is Active (enforced in the issuing transaction); and an L2 credential carries a valid 32-byte holder public key (validated on input). The audit table enforces append-only integrity by hash chaining rather than by database constraints, and the Audit service signs every record hash with a key held outside the database, so that tampering by someone with database access is still detectable even if they recompute the chain.");
 doc.h2("Data Dictionary");
 doc.p(`The most important fields are described in Table ${doc.peekTable()}.`);
 doc.table("Data dictionary (selected fields)", ["Entity.field", "Type", "Meaning and rules"], [
@@ -124,6 +124,7 @@ doc.table("Data dictionary (selected fields)", ["Entity.field", "Type", "Meaning
   ["records.record_id", "VARCHAR(64), unique", "Random ID created on the phone; makes uploads idempotent"],
   ["records.agent, point_id", "VARCHAR", "Taken from the uploader's signed token, never from the request body (STRIDE R1)"],
   ["records.prev_hash, hash", "CHAR(64)", "hash = SHA-256(prev_hash ‖ \"|\" ‖ canonical JSON of the record); the first record uses 64 zeros"],
+  ["records.sig", "VARCHAR(100)", "Ed25519 signature of the hash by the Audit service; its key is outside the database, so a recomputed chain fails verification"],
   ["users.password_hash, salt", "VARCHAR", "scrypt (N = 2^14, r = 8, p = 1) with a per-user 128-bit salt"],
 ], [26, 18, 56]);
 doc.h2("Credential and Message Formats");
@@ -248,4 +249,4 @@ doc.table("Requirements to design elements", ["Requirements", "Design elements"]
   ["NFR-C1 to NFR-C4", "Compact credential encoding; compressed list; batch cap"],
 ], [24, 76]);
 
-doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete design document"]]).then(() => console.log("written", process.argv[2]));
+doc.save(process.argv[2], [["1.0", "4 Nov 2026", "First complete design document"], ["1.1", "8 Nov 2026", "Signed audit records"]]).then(() => console.log("written", process.argv[2]));

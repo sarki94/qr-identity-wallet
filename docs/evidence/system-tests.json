@@ -2,7 +2,7 @@
   "_note": "Browser system tests (Playwright) run against the live services and built PWA. Not part of CI; re-run with web/e2e/*.mjs.",
   "TC-SYS-002": {
     "title": "Distribution day across three browser devices (officer, farmer, agent)",
-    "date": "2026-11-04",
+    "date": "2026-11-08",
     "result": "Pass",
     "checks": "11/11",
     "reqs": [
@@ -26,7 +26,7 @@
   },
   "TC-SYS-003": {
     "title": "Guided demo click-through, 16 steps against live services",
-    "date": "2026-11-04",
+    "date": "2026-11-08",
     "result": "Pass",
     "checks": "16/16",
     "reqs": [

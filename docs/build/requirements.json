@@ -6,7 +6,7 @@
    "category": "Enrolment",
    "priority": "M",
    "status": "Implemented",
-   "text": "Officer looks up a farmer by NIN through NIMC before enrolment.",
+   "text": "The system shall let an officer look up a farmer by NIN through NIMC before enrolment.",
    "uml": "UC diagram (Fig. 4.1) UC-01; SD-1 Issuance sequence (Fig. 4.2)",
    "code": "issuer/app.py enrol()"
   },
@@ -16,7 +16,7 @@
    "category": "Enrolment",
    "priority": "S",
    "status": "Implemented",
-   "text": "Farmer photo captured and embedded as a small signed thumbnail.",
+   "text": "The system shall capture the farmer's photo and embed it as a small signed thumbnail.",
    "uml": "Class diagram (Fig. 3.3) Credential.photo",
    "code": "web Portal.tsx photoToB64(); qrw_core.credential"
   },
@@ -26,7 +26,7 @@
    "category": "Issuance",
    "priority": "M",
    "status": "Implemented",
-   "text": "Issuer signs a credential with ID, masked NIN, name, ward, LGA, state, dates, key ID, level and (L2) holder key.",
+   "text": "The system shall sign a credential holding its ID, masked NIN, name, ward, LGA, state, validity dates, key ID, level and (L2) holder key.",
    "uml": "SD-1 Issuance sequence (Fig. 4.2); SM-2 Credential lifecycle (Fig. 3.2)",
    "code": "qrw_core.credential.issue_credential(); issuer/app.py issue()"
   },
@@ -36,7 +36,7 @@
    "category": "Issuance",
    "priority": "M",
    "status": "Implemented",
-   "text": "L2: wallet generates a device key; officer binds its public key into the credential.",
+   "text": "For L2, the wallet shall generate a device key and the system shall bind its public key into the credential.",
    "uml": "SD-1 Issuance sequence (Fig. 4.2); SM-2 Credential lifecycle (Fig. 3.2) PendingBinding",
    "code": "web qrw.ts newHolderKey(); issuer/app.py issue()"
   },
@@ -46,7 +46,7 @@
    "category": "Issuance",
    "priority": "S",
    "status": "Implemented",
-   "text": "L1: printable paper-wallet card with signed QR.",
+   "text": "For L1, the system shall produce a printable paper wallet carrying the signed QR.",
    "uml": "UC diagram (Fig. 4.1) UC-04; SM-2 Credential lifecycle (Fig. 3.2)",
    "code": "web Portal.tsx (print); qrw_core.credential"
   },
@@ -56,7 +56,7 @@
    "category": "Issuance",
    "priority": "M",
    "status": "Implemented",
-   "text": "At most one active credential per NIN; re-issue revokes the old one atomically (D8).",
+   "text": "The system shall allow at most one active credential per NIN, revoking the old one atomically on re-issue (D8).",
    "uml": "SD-1 Issuance sequence (Fig. 4.2) opt re-issue; Class diagram (Fig. 3.3) rule 2",
    "code": "issuer/app.py issue() single transaction"
   },
@@ -66,7 +66,7 @@
    "category": "Revocation",
    "priority": "M",
    "status": "Implemented",
-   "text": "Officer revokes a credential with a recorded reason.",
+   "text": "The system shall let an officer revoke a credential with a recorded reason.",
    "uml": "SD-3 Revocation & sync sequence (Fig. 4.4); SM-2 Credential lifecycle (Fig. 3.2) Revoked",
    "code": "issuer/app.py revoke()"
   },
@@ -76,7 +76,7 @@
    "category": "Trust",
    "priority": "M",
    "status": "Implemented",
-   "text": "Trust service publishes issuer public keys with key IDs.",
+   "text": "The Trust service shall publish the issuer public keys with their key IDs.",
    "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
    "code": "trust/app.py keys()"
   },
@@ -86,7 +86,7 @@
    "category": "Trust",
    "priority": "M",
    "status": "Implemented",
-   "text": "Signed, versioned revocation list; Trust verifies it and refuses rollback (D11).",
+   "text": "The system shall publish a signed, versioned revocation list, and the Trust service shall verify it and refuse rollback (D11).",
    "uml": "SD-3 Revocation & sync sequence (Fig. 4.4); Class diagram (Fig. 3.3) RevocationList",
    "code": "qrw_core.revocation; trust/app.py receive()"
   },
@@ -96,7 +96,7 @@
    "category": "Wallet",
    "priority": "S",
    "status": "Implemented",
-   "text": "Several farmer profiles on one shared phone, each with its own key and PIN.",
+   "text": "The wallet shall hold several farmer profiles on one shared phone, each with its own key and PIN.",
    "uml": "UC diagram (Fig. 4.1) UC-06",
    "code": "web Wallet.tsx"
   },
@@ -106,7 +106,7 @@
    "category": "Wallet",
    "priority": "M",
    "status": "Implemented",
-   "text": "Credential shown only after the profile PIN is entered.",
+   "text": "The wallet shall show a credential only after the profile PIN is entered.",
    "uml": "UC diagram (Fig. 4.1) UC-07",
    "code": "web Wallet.tsx unlock(); vault.ts"
   },
@@ -116,7 +116,7 @@
    "category": "Wallet",
    "priority": "M",
    "status": "Implemented",
-   "text": "Wallet signs (challenge + credential ID) with the device key and shows the answer QR.",
+   "text": "The wallet shall sign the challenge and credential ID with the device key and show the answer as a QR.",
    "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
    "code": "qrw_core.challenge.sign_challenge(); web qrw.ts signChallenge()"
   },
@@ -126,7 +126,7 @@
    "category": "Wallet",
    "priority": "M",
    "status": "Implemented",
-   "text": "All wallet functions work with no network after enrolment.",
+   "text": "The wallet shall perform all its functions with no network after enrolment.",
    "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
    "code": "web Wallet.tsx (no API calls); PWA service worker"
   },
@@ -136,7 +136,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Partial",
-   "text": "Agent logs in online once, then works offline for 7 days. (Agent PIN unlock not built: the 7-day token is kept on the phone.)",
+   "text": "The verifier shall let an agent sign in online once and then work offline for 7 days. (Agent PIN unlock not built: the 7-day token is kept on the phone.)",
    "uml": "UC diagram (Fig. 4.1) UC-11",
    "code": "auth/app.py token(); web Verifier.tsx"
   },
@@ -146,7 +146,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Verifier downloads keys and revocation list when online and on demand, checking the list signature itself.",
+   "text": "The verifier shall download the keys and revocation list when online and on demand, and check the list signature itself.",
    "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
    "code": "web Verifier.tsx sync(); qrw.ts verifyRevocationList()"
   },
@@ -156,7 +156,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Verifier checks the issuer signature offline.",
+   "text": "The verifier shall check the issuer signature offline.",
    "uml": "SD-2 Offline verification sequence (Fig. 4.3); SM-1 Verification state machine (Fig. 3.1) CredentialRead",
    "code": "qrw_core.credential.verify_credential(); web qrw.ts verifyCredential()"
   },
@@ -166,7 +166,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "L2: fresh random challenge; wallet answer verified against the holder key.",
+   "text": "For L2, the verifier shall issue a fresh random challenge and verify the wallet's answer against the holder key.",
    "uml": "SD-2 Offline verification sequence (Fig. 4.3); SM-1 Verification state machine (Fig. 3.1) ChallengeShown",
    "code": "qrw_core.challenge; web qrw.ts verifyChallengeResponse()"
   },
@@ -176,7 +176,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Verifier checks expiry and revocation against its cached list.",
+   "text": "The verifier shall check expiry and revocation against its cached list.",
    "uml": "SM-1 Verification state machine (Fig. 3.1)",
    "code": "qrw_core.credential.verify_credential()"
   },
@@ -186,7 +186,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Signed photo or details shown; agent must confirm the face before acceptance.",
+   "text": "The verifier shall show the signed photo or details and require the agent to confirm the face before acceptance.",
    "uml": "SM-1 Verification state machine (Fig. 3.1) AwaitingFaceCheck",
    "code": "web Verifier.tsx face step"
   },
@@ -196,7 +196,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Verdict shown as Accepted (L2), Accepted (L1) or Rejected with reason.",
+   "text": "The verifier shall show the verdict as Accepted (L2), Accepted (L1) or Rejected with a reason.",
    "uml": "SM-1 Verification state machine (Fig. 3.1)",
    "code": "web Verifier.tsx"
   },
@@ -206,9 +206,9 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Warn when the list is older than 7 days; refuse acceptances after 30 days.",
+   "text": "The verifier shall warn when its list is older than 7 days and refuse acceptances when it is older than 30 days.",
    "uml": "SM-1 Verification state machine (Fig. 3.1) guard",
-   "code": "web Verifier.tsx SOFT_DAYS/HARD_DAYS"
+   "code": "web lib/qrw.ts listFreshness(); Verifier.tsx"
   },
   {
    "id": "FR-22",
@@ -216,7 +216,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "Every attempt (accepted or rejected) recorded in a local queue.",
+   "text": "The verifier shall record every attempt, accepted or rejected, in a local queue.",
    "uml": "SM-1 Verification state machine (Fig. 3.1) RecordQueued",
    "code": "web Verifier.tsx finish()"
   },
@@ -226,7 +226,7 @@
    "category": "Verifier",
    "priority": "M",
    "status": "Implemented",
-   "text": "No proxy or delegated presentation; the holder must be present (D6).",
+   "text": "The system shall not support proxy or delegated presentation; the holder must be present (D6).",
    "uml": "SD-2 Offline verification sequence (Fig. 4.3)",
    "code": "qrw_core.challenge; Verifier face check"
   },
@@ -236,7 +236,7 @@
    "category": "Audit",
    "priority": "M",
    "status": "Implemented",
-   "text": "Queued records uploaded in batches and appended to a hash chain; agent identity from the token.",
+   "text": "The system shall upload queued records in batches and append them to a signed hash chain, taking the agent's identity from the token.",
    "uml": "SD-3 Revocation & sync sequence (Fig. 4.4)",
    "code": "audit/app.py upload(); qrw_core.audit"
   },
@@ -246,7 +246,7 @@
    "category": "Audit",
    "priority": "M",
    "status": "Implemented",
-   "text": "Auditor filters records and runs a chain-integrity check.",
+   "text": "The system shall let an auditor filter records and run a chain-integrity check.",
    "uml": "UC diagram (Fig. 4.1) UC-13",
    "code": "audit/app.py check_chain(); qrw_core.audit.verify_chain()"
   },
@@ -256,7 +256,7 @@
    "category": "Audit",
    "priority": "S",
    "status": "Implemented",
-   "text": "Flag a credential accepted at two points within 24 hours (possible cloning).",
+   "text": "The system shall flag a credential accepted at two different points within 24 hours (possible cloning).",
    "uml": "UC diagram (Fig. 4.1) UC-14",
    "code": "audit/app.py anomalies()"
   },
@@ -266,7 +266,7 @@
    "category": "Access",
    "priority": "M",
    "status": "Partial",
-   "text": "Staff sign in with username and password. (TOTP MFA for Admin/Auditor deferred: cut list item 2.)",
+   "text": "The system shall authenticate staff by username and password. (TOTP MFA for Admin/Auditor deferred: cut list item 2.)",
    "uml": "UC diagram (Fig. 4.1) UC-11; SD-1 Issuance sequence (Fig. 4.2)",
    "code": "auth/app.py token()"
   },
@@ -276,7 +276,7 @@
    "category": "Access",
    "priority": "M",
    "status": "Implemented",
-   "text": "Every endpoint enforces role-based access (Officer, Agent, Admin, Auditor).",
+   "text": "The system shall enforce role-based access (Officer, Agent, Admin, Auditor) on every endpoint.",
    "uml": "Class diagram (Fig. 3.3)",
    "code": "shared/security.py require_roles()"
   },
@@ -286,7 +286,7 @@
    "category": "Access",
    "priority": "S",
    "status": "Implemented",
-   "text": "Admin creates, disables, unlocks and assigns staff to distribution points.",
+   "text": "The system shall let an administrator create, disable and unlock staff accounts and assign agents to distribution points.",
    "uml": "UC diagram (Fig. 4.1) UC-12",
    "code": "auth/app.py users endpoints"
   },
@@ -376,7 +376,7 @@
    "category": "Security",
    "priority": "M",
    "status": "Implemented",
-   "text": "Audit records tamper-evident (hash chain).",
+   "text": "Audit records tamper-evident: hash chain with each record hash signed by the Audit service.",
    "uml": "Class diagram (Fig. 3.3)",
    "code": "qrw_core.audit"
   },
@@ -484,7 +484,7 @@
  "manual": {
   "FR-19": "Demo: Verifier face-check step (TC-SYS-002 screenshot 08)",
   "FR-20": "Demo: TC-SYS-002 screenshots 09-13",
-  "FR-21": "Demo: Verifier demo clock +8 / +31 days",
+  "FR-21": "Also demonstrated: Verifier demo clock +8 / +31 days",
   "NFR-S8": "Inspection: data fields in credential and Issuer DB",
   "NFR-U1": "Inspection: Verifier verdict strings",
   "NFR-U2": "Inspection: TC-SYS-002 screenshots 09-10",

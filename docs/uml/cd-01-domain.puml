@@ -1,6 +1,6 @@
 @startuml CD
 !include style.iuml
-hide methods
+hide empty methods
 
 package "Issuer Service" {
   class Farmer {
@@ -10,6 +10,8 @@ package "Issuer Service" {
     lga
     state
     photo_ref
+    --
+    enrol(nin)
   }
   class Credential {
     credential_id
@@ -18,15 +20,23 @@ package "Issuer Service" {
     expires_at
     status : Active | Revoked | Expired
     signature
+    --
+    issue()
+    revoke(reason)
+    verify(keys, revoked, today)
   }
   class HolderKey {
     public_key
+    --
+    verifyAnswer(nonce, answer)
   }
   class IssuerKey {
     key_id
     public_key
     valid_from
     valid_to
+    --
+    sign(bytes)
   }
 }
 
@@ -35,6 +45,9 @@ package "Trust & Revocation Service" {
     version
     published_at
     signature
+    --
+    publish()
+    verify(issuerKey)
   }
   class RevocationEntry {
     credential_id
@@ -48,6 +61,9 @@ package "Auth Service" {
     user_id
     role : Officer | Agent | Admin | Auditor
     mfa_enabled
+    --
+    login(password)
+    disable()
   }
   class DistributionPoint {
     point_id
@@ -65,6 +81,10 @@ package "Audit & Sync Service" {
     reason
     prev_hash
     hash
+    signature
+    --
+    append(prev_hash)
+    verifyChain()
   }
 }
 
@@ -72,6 +92,9 @@ package "Citizen Wallet (device)" {
   class WalletProfile {
     profile_id
     pin_wrapped_private_key
+    --
+    unlock(pin)
+    signChallenge(nonce)
   }
 }
 
@@ -96,6 +119,7 @@ note bottom of Credential
 end note
 note bottom of VerificationRecord
   Append-only: each record stores the hash of the
-  previous one, so any edit breaks the chain.
+  previous one, and the Audit service signs each hash,
+  so an edit cannot be hidden by recomputing the chain.
 end note
 @enduml
