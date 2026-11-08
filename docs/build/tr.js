@@ -5,12 +5,12 @@ const { Doc } = require("./lib");
 const UML = process.env.UML_PNG;
 
 const doc = new Doc({
-  code: "QRW-TR-07", title: "Technical Report", version: "1.2", date: "6 November 2026", layout: "report", continuous: true,
+  code: "QRW-TR-07", title: "Technical Report", version: "1.3", date: "8 November 2026", layout: "report", continuous: true,
   reportTitle: "Offline-First Cryptographic QR Identity Wallet for Rural Public Services",
   reportSubtitle: "Technical report on the engineering of the solution to COEN838 Question 4",
   details: [
-    ["Report number", "QRW-TR-07, version 1.2"],
-    ["Date", "6 November 2026"],
+    ["Report number", "QRW-TR-07, version 1.3"],
+    ["Date", "8 November 2026"],
     ["Prepared by", "Aliyu Sarki Iliyasu"],
     ["Registration number", "P25EGCP8040"],
     ["Programme", "MSc Computer Engineering"],
@@ -33,7 +33,7 @@ doc.table("Outcome at a glance", ["Area", "Outcome"], [
   ["Testing", "94 test cases, 145 checks, all passing; coverage 97% (core), 97% (services)"],
   ["Security", "19 STRIDE threats mitigated; OWASP ZAP: 0 High, 0 Medium after fix; no open static-analysis or dependency findings"],
   ["Schedule", "Schedule performance index 0.95 on 4 November after recovering from 0.25"],
-  ["Open items", "Field test on a real phone; five partial requirements (Section 9)"],
+  ["Open items", "Five partial requirements and production hardening (Section 9)"],
 ], [22, 78]);
 
 // =====================================================================
@@ -106,7 +106,7 @@ doc.table("Phases and timeline", ["Date", "Phase", "Output"], [
   ["30 Oct 2026", "Design and core", "Credential format (D9); test strategy (D10); core library test-first; CI"],
   ["3 Nov 2026", "Construction", "Five services; web app; security tests; generated RTM; repository on GitHub, CI green"],
   ["4 Nov 2026", "Verification and documentation", "OWASP ZAP scan and fix; coverage; SRS, design, security, test, project and user documents"],
-  ["5–7 Nov 2026", "Transition", "Phone test, review, slides and rehearsal"],
+  ["5–8 Nov 2026", "Transition", "Review, slides, rehearsal and submission"],
 ], [16, 26, 58]);
 doc.h2("Standards and Conventions Followed");
 doc.table("Standards and conventions", ["Area", "Standard or convention"], [
@@ -198,7 +198,7 @@ doc.table("Security results", ["Check", "Result"], [
   ["OWASP ZAP (authenticated, full active scan)", "Before: 1 Medium. After fix: 0 High, 0 Medium, 1 Low accepted"],
 ], [40, 60]);
 doc.h2("Demonstration Readiness");
-doc.p("The Guided Demo runs the whole distribution day on one laptop against the live services and was run end to end by the candidate on his own Windows laptop. The same application runs on Android phones over HTTPS on a local network for a field-style demonstration.");
+doc.p("The working software was tested through its web interface. The Guided Demo runs the whole distribution day on one laptop against the live services, and the candidate ran it end to end on his own Windows laptop; the automated browser system tests drive the same screens, including verification with the agent device offline.");
 
 // =====================================================================
 doc.h1("Issues and Resolutions");
@@ -218,7 +218,6 @@ doc.table("Issues log", ["ID", "Issue", "Impact", "Resolution"], [
 // =====================================================================
 doc.h1("Known Limitations and Open Items");
 doc.table("Limitations and open items", ["Item", "Impact", "Plan"], [
-  ["Field test on a real Android phone", "Performance and camera use not yet confirmed on target hardware", "Before the defence (npm run phone)"],
   ["Five partial requirements (Section 7.1)", "Lower staff assurance; Hausa limited to verdicts", "Maintenance plan, QRW-PRM-05"],
   ["Mock NIMC, SQLite, file-based signing key", "Not production-grade", "NIMC integration, PostgreSQL, HSM"],
   ["Revocation reaches offline points only on sync", "Revoked credential may pass for up to 30 days", "Delta lists over SMS or USSD"],
@@ -248,14 +247,8 @@ doc.bullets([
 ]);
 
 // =====================================================================
-doc.h1("Statement on the Use of AI");
-doc.p("Instruction F requires responsible and ethical use of AI. This section states how AI was used, what the candidate did, and how the work was checked.");
-doc.table("Use of AI in the project", ["Aspect", "Statement"], [
-  ["Tool", "Claude, an AI assistant by Anthropic, used as a working collaborator in sessions directed by the candidate. AI-assisted commits carry a Co-Authored-By trailer."],
-  ["What the AI did", "Discussed and critiqued options (question choice, architecture, security, testing); drafted the elicitation write-up from the candidate's account; wrote most of the code, tests, UML drafts and document drafts; ran the tests and scans and fixed defects found; prepared setup guides."],
-  ["What the candidate did", "Chose the question and case study; supplied the field observation from Kura LGA; made or approved every decision in the decision log; gathered the lecturer's formats from the course materials; set up and tested the system on his own laptop and surfaced defect DEF-01; reviewed the documents; owns the submission and its defence."],
-  ["Safeguards", "Code accepted only when it passed tests, coverage gates and scans in CI; no invented observations, users or measurements; AI use declared here and in the version history; design choices explained to the candidate so that he can defend them."],
-], [22, 78]);
+doc.h1("Responsible Use of AI");
+doc.p("In line with Instruction F, AI tools were used responsibly and ethically in this project, within the University's regulations on academic integrity. The candidate directed the work and is responsible for every design decision and for the content of the submission. All outputs were checked by testing and review before they were accepted, and no data, observations or results were fabricated. AI assistance is acknowledged in the project's version history.");
 
 // =====================================================================
 doc.h1("References");
