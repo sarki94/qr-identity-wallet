@@ -5,6 +5,7 @@ Each service reads only the files it needs:
   auth_public.b64     -> every service (verifies tokens)
   issuer_private.pem  -> Issuer only (signs credentials and revocation lists)
   issuer_public.b64   -> Trust (publishes it to verifiers)
+  audit_private.pem   -> Audit only (signs each audit record hash)
   service.key         -> Issuer and Trust (internal publish calls)
   nin_pepper.key      -> Issuer only (keyed hash of NINs)
 Private keys are encrypted at rest with QRW_KEY_PASSWORD (NFR-S1).
@@ -21,16 +22,17 @@ from .shared.config import Settings
 
 
 def init_secrets(settings: Settings, overwrite: bool = False) -> Path:
+    """Create every missing key file; existing files are kept unless overwrite is set."""
     d = settings.secrets_dir
     d.mkdir(parents=True, exist_ok=True)
-    if (d / "issuer_private.pem").exists() and not overwrite:
-        return d
-    for name in ("auth", "issuer"):
-        key = Ed25519PrivateKey.generate()
-        save_private_key(key, d / f"{name}_private.pem", settings.key_password)
-        (d / f"{name}_public.b64").write_text(public_key_b64(key.public_key()))
-    (d / "service.key").write_text(secrets.token_urlsafe(32))
-    (d / "nin_pepper.key").write_text(secrets.token_urlsafe(32))
+    for name in ("auth", "issuer", "audit"):
+        if overwrite or not (d / f"{name}_private.pem").exists():
+            key = Ed25519PrivateKey.generate()
+            save_private_key(key, d / f"{name}_private.pem", settings.key_password)
+            (d / f"{name}_public.b64").write_text(public_key_b64(key.public_key()))
+    for name in ("service.key", "nin_pepper.key"):
+        if overwrite or not (d / name).exists():
+            (d / name).write_text(secrets.token_urlsafe(32))
     return d
 
 

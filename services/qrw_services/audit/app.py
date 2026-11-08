@@ -2,22 +2,29 @@
 
 The agent's identity and distribution point come from the signed token, not
 from the request body, so an agent cannot file records in someone else's name.
+
+Each record hash is also signed with the Audit service's Ed25519 key, which is
+held outside the database. A plain hash chain can be recomputed by anyone who
+can write to the database; a signed one cannot (STRIDE T3, TC-SVC-034).
 """
+import base64
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import Body, Depends
 from pydantic import BaseModel, Field
-from sqlalchemy import DateTime, Integer, String, select
+from cryptography.exceptions import InvalidSignature
+from sqlalchemy import DateTime, Integer, String, inspect, select, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from qrw_core.audit import GENESIS, ChainEntry, record_hash, verify_chain
-from qrw_core.keys import load_public_key_b64
+from qrw_core.keys import load_private_key, load_public_key_b64, public_key_b64
 
 from ..shared.app import base_app
 from ..shared.config import Settings
 from ..shared.db import Base, make_session_factory
 from ..shared.security import Principal, require_roles
+from ..secrets import init_secrets
 
 
 MAX_BATCH = 2000  # NFR-C4: a full offline day of records in one upload, and no more
@@ -37,6 +44,7 @@ class Record(Base):
     received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     prev_hash: Mapped[str] = mapped_column(String(64))
     hash: Mapped[str] = mapped_column(String(64))
+    sig: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     def chained_fields(self) -> dict:
         return {"record_id": self.record_id, "credential_id": self.credential_id, "result": self.result,
@@ -55,9 +63,35 @@ class RecordIn(BaseModel):
 
 def create_app(settings: Settings = None):
     settings = settings or Settings()
+    init_secrets(settings)  # adds the audit key to installations created before it existed
+    signing_key = load_private_key(settings.secrets_dir / "audit_private.pem", settings.key_password)
+    verify_key = signing_key.public_key()
     sessions = make_session_factory(settings.db_url("audit"), Base.metadata)
     app = base_app("audit", settings)
     app.state.auth_public_key = load_public_key_b64(settings.secret("auth_public.b64").decode())
+
+    def sign(h: str) -> str:
+        return base64.urlsafe_b64encode(signing_key.sign(h.encode("ascii"))).decode().rstrip("=")
+
+    def signature_ok(h: str, sig: Optional[str]) -> bool:
+        if not sig:
+            return False
+        try:
+            verify_key.verify(base64.urlsafe_b64decode(sig + "=" * (-len(sig) % 4)), h.encode("ascii"))
+            return True
+        except (InvalidSignature, ValueError):
+            return False
+
+    with sessions() as db:  # one-time upgrade of databases created before records were signed
+        if "sig" not in {c["name"] for c in inspect(db.get_bind()).get_columns("records")}:
+            db.execute(text("ALTER TABLE records ADD COLUMN sig VARCHAR(100)"))
+        unsigned = list(db.scalars(select(Record).where(Record.sig.is_(None)).order_by(Record.seq)))
+        if unsigned:
+            rows = list(db.scalars(select(Record).order_by(Record.seq)))
+            if verify_chain([ChainEntry(r.chained_fields(), r.prev_hash, r.hash) for r in rows]) is None:
+                for r in unsigned:  # seal only an intact legacy chain
+                    r.sig = sign(r.hash)
+        db.commit()
     auditor = require_roles("Auditor", "Admin")
 
     @app.post("/records", tags=["sync"])
@@ -75,6 +109,7 @@ def create_app(settings: Settings = None):
                              level=item.level, reason=item.reason, point_id=p.point_id, agent=p.username,
                              verified_at=item.verified_at, received_at=datetime.now(timezone.utc), prev_hash=head)
                 rec.hash = record_hash(rec.chained_fields(), head)
+                rec.sig = sign(rec.hash)
                 head = rec.hash
                 db.add(rec)
                 accepted += 1
@@ -96,13 +131,21 @@ def create_app(settings: Settings = None):
 
     @app.get("/records/verify-chain", tags=["audit"])
     def check_chain(_: Principal = Depends(auditor)):
+        """Intact = every hash links to the one before AND every hash carries a valid Audit signature."""
         with sessions() as db:
             rows = list(db.scalars(select(Record).order_by(Record.seq)))
             chain = [ChainEntry(r.chained_fields(), r.prev_hash, r.hash) for r in rows]
             broken = verify_chain(chain)
-            return {"records": len(chain), "intact": broken is None,
-                    "first_broken_seq": rows[broken].seq if broken is not None else None,
+            bad_sig = next((i for i, r in enumerate(rows) if not signature_ok(r.hash, r.sig)), None)
+            first = min((i for i in (broken, bad_sig) if i is not None), default=None)
+            return {"records": len(chain), "intact": first is None,
+                    "first_broken_seq": rows[first].seq if first is not None else None,
                     "head_hash": chain[-1].hash if chain else GENESIS}
+
+    @app.get("/audit-key", tags=["audit"])
+    def audit_key():
+        """Public key for checking record signatures independently of this service."""
+        return {"public_key": public_key_b64(verify_key)}
 
     @app.get("/anomalies", tags=["audit"])
     def anomalies(_: Principal = Depends(auditor)):
