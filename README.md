@@ -84,6 +84,6 @@ Test-driven development for the cryptographic core: its tests were committed fai
 
 Property-based tests (Hypothesis) prove security properties over many random inputs, for example: *flipping any single bit of a credential or its signature always causes rejection*, and *any arbitrary text fed to the QR decoder is rejected cleanly, never crashing the verifier*.
 
-## AI use statement
+## Responsible use of AI
 
-This project was developed with AI assistance (Claude), used for design discussion, code and document drafting, and review. The field evidence comes from the author, who directed and approved the design decisions and verified the result. Commits made with AI assistance carry a `Co-Authored-By` trailer. The full statement is in the Technical Report (QRW-TR-07, Section 8).
+AI tools were used responsibly in line with Instruction F of the examination and the University's regulations on academic integrity. The author directed the work and is responsible for every design decision and for the content of the submission; all outputs were checked by testing and review. See the Technical Report (QRW-TR-07, Section 12).
